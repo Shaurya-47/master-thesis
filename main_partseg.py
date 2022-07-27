@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+@Author: An Tao, Pengliang Ji
+@Contact: ta19@mails.tsinghua.edu.cn, jpl1723@buaa.edu.cn
+@File: main_partseg.py
+@Time: 2021/7/20 7:49 PM
+"""
+
 
 from __future__ import print_function
 import os
@@ -494,22 +501,22 @@ def test(args, io):
     io.cprint(str((chair_preds.shape)))
         
     # predictions - subset of 10 airplanes and 10 chairs
-    airplane_preds_subset = airplane_preds[0:10]
-    bag_preds_subset = bag_preds[0:10]
-    cap_preds_subset = cap_preds[0:10]
-    car_preds_subset = car_preds[0:10]
-    chair_preds_subset = chair_preds[0:10]
-    earphone_preds_subset = earphone_preds[0:10]
-    guitar_preds_subset = guitar_preds[0:10]
-    knife_preds_subset = knife_preds[0:10]
-    lamp_preds_subset = lamp_preds[0:10]
-    laptop_preds_subset = laptop_preds[0:10]
-    motorbike_preds_subset = motorbike_preds[0:10]
-    mug_preds_subset = mug_preds[0:10]
-    pistol_preds_subset = pistol_preds[0:10]
-    rocket_preds_subset = rocket_preds[0:10]
-    skateboard_preds_subset = skateboard_preds[0:10]
-    table_preds_subset = table_preds[0:10]
+    airplane_preds_subset = airplane_preds[0:100]
+    bag_preds_subset = bag_preds[0:100]
+    cap_preds_subset = cap_preds[0:100]
+    car_preds_subset = car_preds[0:100]
+    chair_preds_subset = chair_preds[0:100]
+    earphone_preds_subset = earphone_preds[0:100]
+    guitar_preds_subset = guitar_preds[0:100]
+    knife_preds_subset = knife_preds[0:100]
+    lamp_preds_subset = lamp_preds[0:100]
+    laptop_preds_subset = laptop_preds[0:100]
+    motorbike_preds_subset = motorbike_preds[0:100]
+    mug_preds_subset = mug_preds[0:100]
+    pistol_preds_subset = pistol_preds[0:100]
+    rocket_preds_subset = rocket_preds[0:100]
+    skateboard_preds_subset = skateboard_preds[0:100]
+    table_preds_subset = table_preds[0:100]
     io.cprint(str(airplane_preds_subset.shape))
     io.cprint(str(chair_preds_subset.shape))
 
@@ -536,22 +543,22 @@ def test(args, io):
     io.cprint(str((chair_conv9_hidden_output.shape)))
     
     # hidden - subset of 10 airplanes and 10 chairs
-    airplane_conv9_hidden_output_subset = airplane_conv9_hidden_output[0:10]
-    bag_conv9_hidden_output_subset = bag_conv9_hidden_output[0:10]
-    cap_conv9_hidden_output_subset = cap_conv9_hidden_output[0:10]
-    car_conv9_hidden_output_subset = car_conv9_hidden_output[0:10]
-    chair_conv9_hidden_output_subset = chair_conv9_hidden_output[0:10]
-    earphone_conv9_hidden_output_subset = earphone_conv9_hidden_output[0:10]
-    guitar_conv9_hidden_output_subset = guitar_conv9_hidden_output[0:10]
-    knife_conv9_hidden_output_subset = knife_conv9_hidden_output[0:10]
-    lamp_conv9_hidden_output_subset = lamp_conv9_hidden_output[0:10]
-    laptop_conv9_hidden_output_subset = laptop_conv9_hidden_output[0:10]
-    motorbike_conv9_hidden_output_subset = motorbike_conv9_hidden_output[0:10]
-    mug_conv9_hidden_output_subset = mug_conv9_hidden_output[0:10]
-    pistol_conv9_hidden_output_subset = pistol_conv9_hidden_output[0:10]
-    rocket_conv9_hidden_output_subset = rocket_conv9_hidden_output[0:10]
-    skateboard_conv9_hidden_output_subset = skateboard_conv9_hidden_output[0:10]
-    table_conv9_hidden_output_subset = table_conv9_hidden_output[0:10]
+    airplane_conv9_hidden_output_subset = airplane_conv9_hidden_output[0:100]
+    bag_conv9_hidden_output_subset = bag_conv9_hidden_output[0:100]
+    cap_conv9_hidden_output_subset = cap_conv9_hidden_output[0:100]
+    car_conv9_hidden_output_subset = car_conv9_hidden_output[0:100]
+    chair_conv9_hidden_output_subset = chair_conv9_hidden_output[0:100]
+    earphone_conv9_hidden_output_subset = earphone_conv9_hidden_output[0:100] 
+    guitar_conv9_hidden_output_subset = guitar_conv9_hidden_output[0:100][0:100]
+    knife_conv9_hidden_output_subset = knife_conv9_hidden_output[0:100]
+    lamp_conv9_hidden_output_subset = lamp_conv9_hidden_output[0:100]
+    laptop_conv9_hidden_output_subset = laptop_conv9_hidden_output[0:100]
+    motorbike_conv9_hidden_output_subset = motorbike_conv9_hidden_output[0:100]
+    mug_conv9_hidden_output_subset = mug_conv9_hidden_output[0:100]
+    pistol_conv9_hidden_output_subset = pistol_conv9_hidden_output[0:100]
+    rocket_conv9_hidden_output_subset = rocket_conv9_hidden_output[0:100]
+    skateboard_conv9_hidden_output_subset = skateboard_conv9_hidden_output[0:100]
+    table_conv9_hidden_output_subset = table_conv9_hidden_output[0:100]
     io.cprint(str(airplane_conv9_hidden_output_subset.shape))
     io.cprint(str(chair_conv9_hidden_output_subset.shape))
 
@@ -578,82 +585,104 @@ def test(args, io):
     io.cprint(str((chair_part_labels.shape)))
     
     # part labels - subset of 10 airplanes and 10 chairs
-    airplane_part_labels_subset = airplane_part_labels[0:10]
-    bag_part_labels_subset = bag_part_labels[0:10]
-    cap_part_labels_subset = cap_part_labels[0:10]
-    car_part_labels_subset = car_part_labels[0:10]
-    chair_part_labels_subset = chair_part_labels[0:10]
-    earphone_part_labels_subset = earphone_part_labels[0:10]
-    guitar_part_labels_subset = guitar_part_labels[0:10]
-    knife_part_labels_subset = knife_part_labels[0:10]
-    lamp_part_labels_subset = lamp_part_labels[0:10]
-    laptop_part_labels_subset = laptop_part_labels[0:10]
-    motorbike_part_labels_subset = motorbike_part_labels[0:10]
-    mug_part_labels_subset = mug_part_labels[0:10]
-    pistol_part_labels_subset = pistol_part_labels[0:10]
-    rocket_part_labels_subset = rocket_part_labels[0:10]
-    skateboard_part_labels_subset = skateboard_part_labels[0:10]
-    table_part_labels_subset = table_part_labels[0:10]
+    airplane_part_labels_subset = airplane_part_labels[0:100]
+    bag_part_labels_subset = bag_part_labels[0:100]
+    cap_part_labels_subset = cap_part_labels[0:100]
+    car_part_labels_subset = car_part_labels[0:100]
+    chair_part_labels_subset = chair_part_labels[0:100]
+    earphone_part_labels_subset = earphone_part_labels[0:100]
+    guitar_part_labels_subset = guitar_part_labels[0:100]
+    knife_part_labels_subset = knife_part_labels[0:100]
+    lamp_part_labels_subset = lamp_part_labels[0:100]
+    laptop_part_labels_subset = laptop_part_labels[0:100]
+    motorbike_part_labels_subset = motorbike_part_labels[0:100]
+    mug_part_labels_subset = mug_part_labels[0:100]
+    pistol_part_labels_subset = pistol_part_labels[0:100]
+    rocket_part_labels_subset = rocket_part_labels[0:100]
+    skateboard_part_labels_subset = skateboard_part_labels[0:100]
+    table_part_labels_subset = table_part_labels[0:100]
     io.cprint(str(airplane_part_labels_subset.shape))
     io.cprint(str(chair_part_labels_subset.shape))
 
-    # converting all to pytorch tensors and saving locally
-    # PREDS = torch.from_numpy(PREDS)
-    # FEATS = torch.from_numpy(FEATS)
-    # PART_LABELS = torch.from_numpy(PART_LABELS)
-    # LABELS = torch.from_numpy(LABELS)
+    io.cprint('Shape counts')
+    io.cprint(str(airplane_part_labels_subset.shape))
+    io.cprint(str(bag_part_labels_subset.shape))
+    io.cprint(str(cap_part_labels_subset.shape))
+    io.cprint(str(car_part_labels_subset.shape))
+    io.cprint(str(chair_part_labels_subset.shape))
+    io.cprint(str(earphone_part_labels_subset.shape))
+    io.cprint(str(guitar_part_labels_subset.shape))
+    io.cprint(str(knife_part_labels_subset.shape))
+    io.cprint(str(lamp_part_labels_subset.shape))
+    io.cprint(str(laptop_part_labels_subset.shape))
+    io.cprint(str(motorbike_part_labels_subset.shape))
+    io.cprint(str(mug_part_labels_subset.shape))
+    io.cprint(str(pistol_part_labels_subset.shape))
+    io.cprint(str(rocket_part_labels_subset.shape))
+    io.cprint(str(skateboard_part_labels_subset.shape))
+    io.cprint(str(table_part_labels_subset.shape))
     
-    torch.save(airplane_preds_subset, 'outputs/%s/airplane_test_subset_predictions.pt' % args.exp_name)
-    torch.save(bag_preds_subset, 'outputs/%s/bag_test_subset_predictions.pt' % args.exp_name)
-    torch.save(cap_preds_subset, 'outputs/%s/cap_test_subset_predictions.pt' % args.exp_name)
-    torch.save(car_preds_subset, 'outputs/%s/car_test_subset_predictions.pt' % args.exp_name)
-    torch.save(chair_preds_subset, 'outputs/%s/chair_test_subset_predictions.pt' % args.exp_name)
-    torch.save(earphone_preds_subset, 'outputs/%s/earphones_test_subset_predictions.pt' % args.exp_name)
-    torch.save(guitar_preds_subset, 'outputs/%s/guitar_test_subset_predictions.pt' % args.exp_name)
-    torch.save(knife_preds_subset, 'outputs/%s/knife_test_subset_predictions.pt' % args.exp_name)
-    torch.save(lamp_preds_subset, 'outputs/%s/lamp_test_subset_predictions.pt' % args.exp_name)
-    torch.save(laptop_preds_subset, 'outputs/%s/laptop_test_subset_predictions.pt' % args.exp_name)
-    torch.save(motorbike_preds_subset, 'outputs/%s/motorbike_test_subset_predictions.pt' % args.exp_name)
-    torch.save(mug_preds_subset, 'outputs/%s/mug_test_subset_predictions.pt' % args.exp_name)
-    torch.save(pistol_preds_subset, 'outputs/%s/pistol_test_subset_predictions.pt' % args.exp_name)
-    torch.save(rocket_preds_subset, 'outputs/%s/rocket_test_subset_predictions.pt' % args.exp_name)
-    torch.save(skateboard_preds_subset, 'outputs/%s/skateboard_test_subset_predictions.pt' % args.exp_name)
-    torch.save(table_preds_subset, 'outputs/%s/table_test_subset_predictions.pt' % args.exp_name)
+    torch.save(airplane_preds_subset, 'outputs/%s/airplane_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(bag_preds_subset, 'outputs/%s/bag_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(cap_preds_subset, 'outputs/%s/cap_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(car_preds_subset, 'outputs/%s/car_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(chair_preds_subset, 'outputs/%s/chair_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(earphone_preds_subset, 'outputs/%s/earphone_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(guitar_preds_subset, 'outputs/%s/guitar_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(knife_preds_subset, 'outputs/%s/knife_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(lamp_preds_subset, 'outputs/%s/lamp_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(laptop_preds_subset, 'outputs/%s/laptop_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(motorbike_preds_subset, 'outputs/%s/motorbike_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(mug_preds_subset, 'outputs/%s/mug_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(pistol_preds_subset, 'outputs/%s/pistol_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(rocket_preds_subset, 'outputs/%s/rocket_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(skateboard_preds_subset, 'outputs/%s/skateboard_test_subset_predictions_big_dataset.pt' % args.exp_name)
+    torch.save(table_preds_subset, 'outputs/%s/table_test_subset_predictions_big_dataset.pt' % args.exp_name)
     
-    torch.save(airplane_conv9_hidden_output_subset, 'outputs/%s/airplane_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(bag_conv9_hidden_output_subset, 'outputs/%s/bag_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(cap_conv9_hidden_output_subset, 'outputs/%s/cap_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(car_conv9_hidden_output_subset, 'outputs/%s/car_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(chair_conv9_hidden_output_subset, 'outputs/%s/chair_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(earphone_conv9_hidden_output_subset, 'outputs/%s/earphone_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(guitar_conv9_hidden_output_subset, 'outputs/%s/guitar_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(knife_conv9_hidden_output_subset, 'outputs/%s/knife_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(lamp_conv9_hidden_output_subset, 'outputs/%s/lamp_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(laptop_conv9_hidden_output_subset, 'outputs/%s/laptop_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(motorbike_conv9_hidden_output_subset, 'outputs/%s/motorbike_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(mug_conv9_hidden_output_subset, 'outputs/%s/mug_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(pistol_conv9_hidden_output_subset, 'outputs/%s/pistol_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(rocket_conv9_hidden_output_subset, 'outputs/%s/rocket_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(skateboard_conv9_hidden_output_subset, 'outputs/%s/skateboard_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(table_conv9_hidden_output_subset, 'outputs/%s/table_test_subset_conv9_hidden_output.pt' % args.exp_name)
+    torch.save(airplane_conv9_hidden_output_subset, 'outputs/%s/airplane_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(bag_conv9_hidden_output_subset, 'outputs/%s/bag_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(cap_conv9_hidden_output_subset, 'outputs/%s/cap_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(car_conv9_hidden_output_subset, 'outputs/%s/car_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(chair_conv9_hidden_output_subset, 'outputs/%s/chair_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(earphone_conv9_hidden_output_subset, 'outputs/%s/earphone_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(guitar_conv9_hidden_output_subset, 'outputs/%s/guitar_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(knife_conv9_hidden_output_subset, 'outputs/%s/knife_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(lamp_conv9_hidden_output_subset, 'outputs/%s/lamp_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(laptop_conv9_hidden_output_subset, 'outputs/%s/laptop_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(motorbike_conv9_hidden_output_subset, 'outputs/%s/motorbike_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(mug_conv9_hidden_output_subset, 'outputs/%s/mug_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(pistol_conv9_hidden_output_subset, 'outputs/%s/pistol_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(rocket_conv9_hidden_output_subset, 'outputs/%s/rocket_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(skateboard_conv9_hidden_output_subset, 'outputs/%s/skateboard_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
+    torch.save(table_conv9_hidden_output_subset, 'outputs/%s/table_test_subset_conv9_hidden_output_big_dataset.pt' % args.exp_name)
     
-    torch.save(airplane_part_labels_subset, 'outputs/%s/airplane_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(bag_part_labels_subset, 'outputs/%s/bag_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(cap_part_labels_subset, 'outputs/%s/cap_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(car_part_labels_subset, 'outputs/%s/car_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(chair_part_labels_subset, 'outputs/%s/chair_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(earphone_part_labels_subset, 'outputs/%s/earphone_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(guitar_part_labels_subset, 'outputs/%s/guitar_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(knife_part_labels_subset, 'outputs/%s/knife_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(lamp_part_labels_subset, 'outputs/%s/lamp_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(laptop_part_labels_subset, 'outputs/%s/laptop_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(motorbike_part_labels_subset, 'outputs/%s/motorbike_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(mug_part_labels_subset, 'outputs/%s/mug_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(pistol_part_labels_subset, 'outputs/%s/pistol_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(rocket_part_labels_subset, 'outputs/%s/rocket_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(skateboard_part_labels_subset, 'outputs/%s/skateboard_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(table_part_labels_subset, 'outputs/%s/table_test_subset_part_labels.pt' % args.exp_name)
-
+    torch.save(airplane_part_labels_subset, 'outputs/%s/airplane_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(bag_part_labels_subset, 'outputs/%s/bag_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(cap_part_labels_subset, 'outputs/%s/cap_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(car_part_labels_subset, 'outputs/%s/car_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(chair_part_labels_subset, 'outputs/%s/chair_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(earphone_part_labels_subset, 'outputs/%s/earphone_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(guitar_part_labels_subset, 'outputs/%s/guitar_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(knife_part_labels_subset, 'outputs/%s/knife_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(lamp_part_labels_subset, 'outputs/%s/lamp_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(laptop_part_labels_subset, 'outputs/%s/laptop_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(motorbike_part_labels_subset, 'outputs/%s/motorbike_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(mug_part_labels_subset, 'outputs/%s/mug_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(pistol_part_labels_subset, 'outputs/%s/pistol_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(rocket_part_labels_subset, 'outputs/%s/rocket_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(skateboard_part_labels_subset, 'outputs/%s/skateboard_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    torch.save(table_part_labels_subset, 'outputs/%s/table_test_subset_part_labels_big_dataset.pt' % args.exp_name)
+    
+    # saving in parts as size is too big 
+    #chair_conv9_hidden_output_subset_part_1 = chair_conv9_hidden_output_subset[:400]
+    #chair_conv9_hidden_output_subset_part_2 = chair_conv9_hidden_output_subset[400:]
+    #table_conv9_hidden_output_subset_part_1 = table_conv9_hidden_output_subset[:400]
+    #table_conv9_hidden_output_subset_part_2 = table_conv9_hidden_output_subset[400:]
+    
+    #torch.save(chair_conv9_hidden_output_subset_part_1, 'outputs/%s/chair_test_subset_conv9_hidden_output_big_dataset_part_1.pt' % args.exp_name)
+    #torch.save(chair_conv9_hidden_output_subset_part_2, 'outputs/%s/chair_test_subset_conv9_hidden_output_big_dataset_part_2.pt' % args.exp_name)
+    #torch.save(table_conv9_hidden_output_subset_part_1, 'outputs/%s/table_test_subset_conv9_hidden_output_big_dataset_part_1.pt' % args.exp_name)
+    #torch.save(table_conv9_hidden_output_subset_part_2, 'outputs/%s/table_test_subset_conv9_hidden_output_big_dataset_part_2.pt' % args.exp_name)
 
     
 ##############################################################################
