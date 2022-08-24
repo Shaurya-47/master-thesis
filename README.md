@@ -4,7 +4,7 @@
 * Python 3.7
 * PyTorch 1.2
 * CUDA 10.0
-* Packages: glob, h5py, sklearn, plyfile, umap, pytorch3d, matplotlib, numpy, pandas, and scipy
+* Packages: glob, h5py, sklearn, plyfile, umap, pytorch3d, matplotlib, numpy, pandas, sklearn, and scipy
 
 ## Pre-requisite: extraction of hidden layer activations:
 
