@@ -8,12 +8,6 @@ from scipy.sparse import csr_matrix, csgraph
 from umap.umap_ import compute_membership_strengths, smooth_knn_dist, make_epochs_per_sample, simplicial_set_embedding, find_ab_params
 import scipy
 
-# loading the 2D embedding and UMAP graph
-graph_sparse = scipy.sparse.load_npz('./Results/conv9_graph_full_data_hp_0.5_300_rs_1.npz')
-#embedding = np.load('./Data/partseg_full_data_conv9/conv9_UMAP_embedding_hp_0.5_300_rs_1.npy')
-
-# importing data - default numpy array format
-
 # importing data
 airplane_test_subset_part_labels = th.load('airplane_test_subset_part_labels.pt')
 bag_test_subset_part_labels = th.load('bag_test_subset_part_labels.pt')
@@ -101,9 +95,6 @@ np.unique(part_labels_subset)
 
 print(np.unique(predictions_subset).shape) # 49/50 as a chair part and a motorcycle part are never predicted
 print(np.unique(part_labels_subset).shape) # 49/50 as one label does not exist in data
-
-
-########################## PREDICTIONS ########################################
 
 # creating an index list for the start of each example
 examples = []
