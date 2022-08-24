@@ -27,7 +27,9 @@ predictions = np.resize(predictions, (204800,1)).flatten()
 # defining the UMAP reducer
 reducer = umap.UMAP(min_dist = 0.5, n_neighbors = 300, random_state = 1) # this is the original baseline
 embedding = reducer.fit_transform(conv8_output)
-embedding.shape
+#embedding.shape
+# saving the embedding
+np.save('./Results/semseg_conv8_baseline_embedding_2048_100.npy', embedding)
 
 # pandas mapping approach
 predictions = predictions.tolist()
