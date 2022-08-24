@@ -59,10 +59,6 @@ rocket_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/rocket_
 skateboard_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/skateboard_test_subset_predictions_big_dataset.pt')
 table_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/table_test_subset_predictions_big_dataset.pt')
 
-# defining the UMAP reducer
-reducer = umap.UMAP(min_dist = 0.5, n_neighbors = 300, random_state = 1) # this is the original baseline
-
-
 # dropping the batch size dimension of the tensors
 airplane_conv9_hidden_output_flipped = np.moveaxis(airplane_test_subset_conv9_hidden_output, 2, 1)
 airplane_conv9_hidden_output_resized = np.resize(airplane_conv9_hidden_output_flipped, (100*2048,256))
@@ -119,6 +115,8 @@ conv9_hidden_output_subset = np.vstack((airplane_conv9_hidden_output_resized,
                                         ))
 print(conv9_hidden_output_subset.shape)
 
+# defining the UMAP reducer
+reducer = umap.UMAP(min_dist = 0.5, n_neighbors = 300, random_state = 1) # this is the original baseline
 # applying UMAP to reduce the dimensionality to 2
 embedding = reducer.fit_transform(conv9_hidden_output_subset)
 print(embedding.shape)
