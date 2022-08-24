@@ -17,5 +17,5 @@
 
 1. After obtaining all the hidden layer activations, accordingly edit the path at the beginning of each script to reflect the new files
 2. The 9th convolutional layer and 8th convolutional layers are used by default for the part and semantic scene segmentation scenarios respectively, but they can be changed by replacing `conv9` in line 359 or `conv8` in line 358 of the `activation_extraction_partseg_conv9.py` or `activation_extraction_semseg_conv8.py` scripts with other layers respectively.
-3. The scripts in this repository conduct all experinments and generate visualisations via prediction information from the DGCNN neural network model. Label information can also be used for the same purpose as it is also saved via the activation extraction scripts
+3. The scripts in this repository conduct all experinments and generate visualizations via prediction information from the DGCNN neural network model. Label information can also be used for the same purpose as it is also saved via the activation extraction scripts
 
