@@ -1,4 +1,4 @@
-Code for the Master's Thesis titled "Effective Activation Projections for Deep Learning on Point Clouds"
+# Code for the Master's Thesis titled "Effective Activation Projections for Deep Learning on Point Clouds"
 
 In order to use the code from this repository, it is required to extract sample-wise activations (hidden layer representations) from a chosen neural network model designed for point cloud segmentation tasks.
 
