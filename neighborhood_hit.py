@@ -2,6 +2,7 @@
 
 # package imports
 import numpy as np
+import torch as th
 import matplotlib.pyplot as plt
 from sklearn import cluster, datasets, mixture
 from sklearn.neighbors import kneighbors_graph
@@ -14,7 +15,7 @@ np.random.seed(1)
 
 # loading the required data
 embedding = np.load('semseg_conv8_baseline_embedding_2048_100.npy')
-predictions = np.load('semseg_test_predictions_2048_100.pt')
+predictions = th.load('semseg_test_predictions_2048_100.pt')
 predictions = predictions.permute(0, 2, 1).contiguous()
 predictions = predictions.max(dim=2)[1]
 predictions = predictions.detach().cpu().numpy()
