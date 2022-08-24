@@ -1,5 +1,11 @@
 # Code for the master's thesis titled "Effective Activation Projections for Deep Learning on Point Clouds"
 
+## Requirements
+* Python 3.7
+* PyTorch 1.2
+* CUDA 10.0
+* Packages: glob, h5py, sklearn, plyfile, umap, pytorch3d, matplotlib, numpy, pandas, and scipy
+
 ## Pre-requisite: extraction of hidden layer activations:
 
 1. In order to use the code from this repository to replicate the experiments of the master's thesis, it is first required to extract sample-wise activations (hidden layer representations) from a chosen neural network model designed for point cloud segmentation tasks.
