@@ -14,39 +14,40 @@ graph_sparse = scipy.sparse.load_npz('./Results/conv9_graph_full_data_hp_0.5_300
 
 # importing data - default numpy array format
 
-airplane_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/airplane_test_subset_part_labels_big_dataset.pt')
-bag_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/bag_test_subset_part_labels_big_dataset.pt')
-cap_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/cap_test_subset_part_labels_big_dataset.pt')
-car_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/car_test_subset_part_labels_big_dataset.pt')
-chair_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/chair_test_subset_part_labels_big_dataset.pt')
-earphone_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/earphone_test_subset_part_labels_big_dataset.pt')
-guitar_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/guitar_test_subset_part_labels_big_dataset.pt')
-knife_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/knife_test_subset_part_labels_big_dataset.pt')
-lamp_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/lamp_test_subset_part_labels_big_dataset.pt')
-laptop_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/laptop_test_subset_part_labels_big_dataset.pt')
-motorbike_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/motorbike_test_subset_part_labels_big_dataset.pt')
-mug_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/mug_test_subset_part_labels_big_dataset.pt')
-pistol_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/pistol_test_subset_part_labels_big_dataset.pt')
-rocket_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/rocket_test_subset_part_labels_big_dataset.pt')
-skateboard_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/skateboard_test_subset_part_labels_big_dataset.pt')
-table_test_subset_part_labels = th.load('./Data/partseg_full_data_conv9/table_test_subset_part_labels_big_dataset.pt')
+# importing data
+airplane_test_subset_part_labels = th.load('airplane_test_subset_part_labels.pt')
+bag_test_subset_part_labels = th.load('bag_test_subset_part_labels.pt')
+cap_test_subset_part_labels = th.load('cap_test_subset_part_labels.pt')
+car_test_subset_part_labels = th.load('car_test_subset_part_labels.pt')
+chair_test_subset_part_labels = th.load('chair_test_subset_part_labels.pt')
+earphone_test_subset_part_labels = th.load('earphone_test_subset_part_labels.pt')
+guitar_test_subset_part_labels = th.load('guitar_test_subset_part_labels.pt')
+knife_test_subset_part_labels = th.load('knife_test_subset_part_labels.pt')
+lamp_test_subset_part_labels = th.load('lamp_test_subset_part_labels.pt')
+laptop_test_subset_part_labels = th.load('laptop_test_subset_part_labels.pt')
+motorbike_test_subset_part_labels = th.load('motorbike_test_subset_part_labels.pt')
+mug_test_subset_part_labels = th.load('mug_test_subset_part_labels.pt')
+pistol_test_subset_part_labels = th.load('pistol_test_subset_part_labels.pt')
+rocket_test_subset_part_labels = th.load('rocket_test_subset_part_labels.pt')
+skateboard_test_subset_part_labels = th.load('skateboard_test_subset_part_labels.pt')
+table_test_subset_part_labels = th.load('table_test_subset_part_labels.pt')
 
-airplane_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/airplane_test_subset_predictions_big_dataset.pt')
-bag_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/bag_test_subset_predictions_big_dataset.pt')
-cap_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/cap_test_subset_predictions_big_dataset.pt')
-car_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/car_test_subset_predictions_big_dataset.pt')
-chair_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/chair_test_subset_predictions_big_dataset.pt')
-earphone_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/earphone_test_subset_predictions_big_dataset.pt')
-guitar_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/guitar_test_subset_predictions_big_dataset.pt')
-knife_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/knife_test_subset_predictions_big_dataset.pt')
-lamp_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/lamp_test_subset_predictions_big_dataset.pt')
-laptop_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/laptop_test_subset_predictions_big_dataset.pt')
-motorbike_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/motorbike_test_subset_predictions_big_dataset.pt')
-mug_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/mug_test_subset_predictions_big_dataset.pt')
-pistol_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/pistol_test_subset_predictions_big_dataset.pt')
-rocket_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/rocket_test_subset_predictions_big_dataset.pt')
-skateboard_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/skateboard_test_subset_predictions_big_dataset.pt')
-table_test_subset_predictions = th.load('./Data/partseg_full_data_conv9/table_test_subset_predictions_big_dataset.pt')
+airplane_test_subset_predictions = th.load('airplane_test_subset_predictions.pt')
+bag_test_subset_predictions = th.load('bag_test_subset_predictions.pt')
+cap_test_subset_predictions = th.load('cap_test_subset_predictions.pt')
+car_test_subset_predictions = th.load('car_test_subset_predictions.pt')
+chair_test_subset_predictions = th.load('chair_test_subset_predictions.pt')
+earphone_test_subset_predictions = th.load('earphone_test_subset_predictions.pt')
+guitar_test_subset_predictions = th.load('guitar_test_subset_predictions.pt')
+knife_test_subset_predictions = th.load('knife_test_subset_predictions.pt')
+lamp_test_subset_predictions = th.load('lamp_test_subset_predictions.pt')
+laptop_test_subset_predictions = th.load('laptop_test_subset_predictions.pt')
+motorbike_test_subset_predictions = th.load('motorbike_test_subset_predictions.pt')
+mug_test_subset_predictions = th.load('mug_test_subset_predictions.pt')
+pistol_test_subset_predictions = th.load('pistol_test_subset_predictions.pt')
+rocket_test_subset_predictions = th.load('rocket_test_subset_predictions.pt')
+skateboard_test_subset_predictions = th.load('skateboard_test_subset_predictions.pt')
+table_test_subset_predictions = th.load('table_test_subset_predictions.pt')
 
 
 # concatenating predictions subset and part labels subset
@@ -91,11 +92,11 @@ predictions_subset = th.from_numpy(predictions_subset)
 predictions_subset = predictions_subset.permute(0, 2, 1).contiguous()
 predictions_subset = predictions_subset.max(dim=2)[1]
 predictions_subset = predictions_subset.detach().cpu().numpy()
-predictions_subset = np.resize(predictions_subset, (2002944,1)).flatten()
+predictions_subset = np.resize(predictions_subset, (163840,1)).flatten()
 np.unique(predictions_subset)
 
 
-part_labels_subset = np.resize(part_labels_subset, (2002944,1)).flatten()
+part_labels_subset = np.resize(part_labels_subset, (163840,1)).flatten()
 np.unique(part_labels_subset)
 
 print(np.unique(predictions_subset).shape) # 49/50 as a chair part and a motorcycle part are never predicted
@@ -107,7 +108,7 @@ print(np.unique(part_labels_subset).shape) # 49/50 as one label does not exist i
 # creating an index list for the start of each example
 examples = []
 for i in range(len(predictions_subset)):
-    if i % 2048 == 0:
+    if i % 1024 == 0:
         examples.append(i)
 examples_forward = examples[1:]
 
@@ -117,7 +118,7 @@ for j,k in zip(examples, examples_forward):
     example_ranges.append(range(j,k))
 
 # appending the last index to the list
-example_ranges.append(range(len(predictions_subset)-2048, len(predictions_subset)))
+example_ranges.append(range(len(predictions_subset)-1024, len(predictions_subset)))
 
 # check
 print(example_ranges[1][0],example_ranges[1][-1])
@@ -222,7 +223,7 @@ def transform(graph, metric="euclidean", n_components = 2, n_epochs = 500,
 final_output_protocol_two = transform(graph_new)
 final_output_protocol_two = final_output_protocol_two[0]
 
-np.save('./Results/conv9_protocol_two_embedding_full_data_hp_0.5_300_rs_1.npy', final_output_protocol_two)
+np.save('./Results/conv9_protocol_two_embedding_hp_0.5_300_rs_1.npy', final_output_protocol_two)
 
 # plot pre-requisites 
 part_outer_list_partmap = part_outer_list_flattened.copy()
