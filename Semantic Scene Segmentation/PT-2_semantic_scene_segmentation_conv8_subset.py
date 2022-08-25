@@ -9,8 +9,6 @@ from umap.umap_ import compute_membership_strengths, smooth_knn_dist, make_epoch
 import scipy
 
 # importing data
-
-# importing data
 conv8_output = th.load('semseg_test_conv8_hidden_output_2048_100.pt').detach().numpy()
 part_labels_subset = th.load('semseg_test_part_labels_2048_100.pt').detach().numpy()
 predictions_subset = th.load('semseg_test_predictions_2048_100.pt').detach().numpy()
@@ -19,11 +17,11 @@ predictions_subset = th.load('semseg_test_predictions_2048_100.pt').detach().num
 conv8_output = np.array(conv8_output)
 conv8_output = np.moveaxis(conv8_output, 2, 1)
 conv8_output = np.resize(conv8_output, (204800,256))
+
 predictions_subset = th.from_numpy(predictions_subset)
 predictions_subset = predictions_subset.permute(0, 2, 1).contiguous()
 predictions_subset = predictions_subset.max(dim=2)[1]
 predictions_subset = predictions_subset.detach().cpu().numpy()
-#print(np.unique(predictions_subset), np.unique(predictions_subset).shape)
 predictions_subset = np.resize(predictions_subset, (204800,1)).flatten()
 part_labels_subset = np.resize(part_labels_subset, (204800,1)).flatten()
 
