@@ -60,59 +60,25 @@ rocket_test_subset_predictions = th.load('rocket_test_subset_predictions.pt')
 skateboard_test_subset_predictions = th.load('skateboard_test_subset_predictions.pt')
 table_test_subset_predictions = th.load('table_test_subset_predictions.pt')
 
-# dropping the batch size dimension of the tensors
-airplane_conv9_hidden_output_flipped = np.moveaxis(airplane_test_subset_conv9_hidden_output, 2, 1)
-airplane_conv9_hidden_output_resized = np.resize(airplane_conv9_hidden_output_flipped, (10240,256))
-bag_conv9_hidden_output_flipped = np.moveaxis(bag_test_subset_conv9_hidden_output, 2, 1)
-bag_conv9_hidden_output_resized = np.resize(bag_conv9_hidden_output_flipped, (10240,256))
-cap_conv9_hidden_output_flipped = np.moveaxis(cap_test_subset_conv9_hidden_output, 2, 1)
-cap_conv9_hidden_output_resized = np.resize(cap_conv9_hidden_output_flipped, (10240,256))
-car_conv9_hidden_output_flipped = np.moveaxis(car_test_subset_conv9_hidden_output, 2, 1)
-car_conv9_hidden_output_resized = np.resize(car_conv9_hidden_output_flipped, (10240,256))
-chair_conv9_hidden_output_flipped = np.moveaxis(chair_test_subset_conv9_hidden_output, 2, 1)
-chair_conv9_hidden_output_resized = np.resize(chair_conv9_hidden_output_flipped, (10240,256))
-earphone_conv9_hidden_output_flipped = np.moveaxis(earphone_test_subset_conv9_hidden_output, 2, 1)
-earphone_conv9_hidden_output_resized = np.resize(earphone_conv9_hidden_output_flipped, (10240,256))
-guitar_conv9_hidden_output_flipped = np.moveaxis(guitar_test_subset_conv9_hidden_output, 2, 1)
-guitar_conv9_hidden_output_resized = np.resize(guitar_conv9_hidden_output_flipped, (10240,256))
-knife_conv9_hidden_output_flipped = np.moveaxis(knife_test_subset_conv9_hidden_output, 2, 1)
-knife_conv9_hidden_output_resized = np.resize(knife_conv9_hidden_output_flipped, (10240,256))
-lamp_conv9_hidden_output_flipped = np.moveaxis(lamp_test_subset_conv9_hidden_output, 2, 1)
-lamp_conv9_hidden_output_resized = np.resize(lamp_conv9_hidden_output_flipped, (10240,256))
-laptop_conv9_hidden_output_flipped = np.moveaxis(laptop_test_subset_conv9_hidden_output, 2, 1)
-laptop_conv9_hidden_output_resized = np.resize(laptop_conv9_hidden_output_flipped, (10240,256))
-motorbike_conv9_hidden_output_flipped = np.moveaxis(motorbike_test_subset_conv9_hidden_output, 2, 1)
-motorbike_conv9_hidden_output_resized = np.resize(motorbike_conv9_hidden_output_flipped, (10240,256))
-mug_conv9_hidden_output_flipped = np.moveaxis(mug_test_subset_conv9_hidden_output, 2, 1)
-mug_conv9_hidden_output_resized = np.resize(mug_conv9_hidden_output_flipped, (10240,256))
-pistol_conv9_hidden_output_flipped = np.moveaxis(pistol_test_subset_conv9_hidden_output, 2, 1)
-pistol_conv9_hidden_output_resized = np.resize(pistol_conv9_hidden_output_flipped, (10240,256))
-rocket_conv9_hidden_output_flipped = np.moveaxis(rocket_test_subset_conv9_hidden_output, 2, 1)
-rocket_conv9_hidden_output_resized = np.resize(rocket_conv9_hidden_output_flipped, (10240,256))
-skateboard_conv9_hidden_output_flipped = np.moveaxis(skateboard_test_subset_conv9_hidden_output, 2, 1)
-skateboard_conv9_hidden_output_resized = np.resize(skateboard_conv9_hidden_output_flipped, (10240,256))
-table_conv9_hidden_output_flipped = np.moveaxis(table_test_subset_conv9_hidden_output, 2, 1)
-table_conv9_hidden_output_resized = np.resize(table_conv9_hidden_output_flipped, (10240,256))
+# restructuring tensors as batch_size x num_points x dimension
+airplane_conv9_hidden_output = np.moveaxis(airplane_test_subset_conv9_hidden_output, 2, 1)
+bag_conv9_hidden_output = np.moveaxis(bag_test_subset_conv9_hidden_output, 2, 1)
+cap_conv9_hidden_output = np.moveaxis(cap_test_subset_conv9_hidden_output, 2, 1)
+car_conv9_hidden_output = np.moveaxis(car_test_subset_conv9_hidden_output, 2, 1)
+chair_conv9_hidden_output = np.moveaxis(chair_test_subset_conv9_hidden_output, 2, 1)
+earphone_conv9_hidden_output = np.moveaxis(earphone_test_subset_conv9_hidden_output, 2, 1)
+guitar_conv9_hidden_output = np.moveaxis(guitar_test_subset_conv9_hidden_output, 2, 1)
+knife_conv9_hidden_output = np.moveaxis(knife_test_subset_conv9_hidden_output, 2, 1)
+lamp_conv9_hidden_output = np.moveaxis(lamp_test_subset_conv9_hidden_output, 2, 1)
+laptop_conv9_hidden_output = np.moveaxis(laptop_test_subset_conv9_hidden_output, 2, 1)
+motorbike_conv9_hidden_output = np.moveaxis(motorbike_test_subset_conv9_hidden_output, 2, 1)
+mug_conv9_hidden_output = np.moveaxis(mug_test_subset_conv9_hidden_output, 2, 1)
+pistol_conv9_hidden_output = np.moveaxis(pistol_test_subset_conv9_hidden_output, 2, 1)
+rocket_conv9_hidden_output = np.moveaxis(rocket_test_subset_conv9_hidden_output, 2, 1)
+skateboard_conv9_hidden_output = np.moveaxis(skateboard_test_subset_conv9_hidden_output, 2, 1)
+table_conv9_hidden_output = np.moveaxis(table_test_subset_conv9_hidden_output, 2, 1)
 
-# combining the subsets
-conv9_hidden_output_subset = np.vstack((airplane_conv9_hidden_output_resized, 
-                                        bag_conv9_hidden_output_resized,
-                                        cap_conv9_hidden_output_resized,
-                                        car_conv9_hidden_output_resized,
-                                        chair_conv9_hidden_output_resized,
-                                        earphone_conv9_hidden_output_resized,
-                                        guitar_conv9_hidden_output_resized,
-                                        knife_conv9_hidden_output_resized,
-                                        lamp_conv9_hidden_output_resized,
-                                        laptop_conv9_hidden_output_resized,
-                                        motorbike_conv9_hidden_output_resized,
-                                        mug_conv9_hidden_output_resized,
-                                        pistol_conv9_hidden_output_resized,
-                                        rocket_conv9_hidden_output_resized,
-                                        skateboard_conv9_hidden_output_resized,
-                                        table_conv9_hidden_output_resized
-                                        ))
-
+# combining
 predictions_subset = np.vstack((airplane_test_subset_predictions,
                                 bag_test_subset_predictions,
                                 cap_test_subset_predictions,
