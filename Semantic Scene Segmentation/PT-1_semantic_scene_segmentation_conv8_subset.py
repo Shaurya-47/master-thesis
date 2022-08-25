@@ -11,14 +11,17 @@ semseg_test_subset_conv8_hidden_output = th.load('semseg_test_conv8_hidden_outpu
 semseg_test_subset_part_labels = th.load('semseg_test_part_labels_2048_100.pt').detach().numpy()
 semseg_test_subset_predictions = th.load('semseg_test_predictions_2048_100.pt').detach().numpy()
 
-# restructuring tensors as batch_size x num_points x dimension
+# restructuring
+semseg_test_subset_conv8_hidden_output = np.array(semseg_test_subset_conv8_hidden_output)
 semseg_test_subset_conv8_hidden_output = np.moveaxis(semseg_test_subset_conv8_hidden_output, 2, 1)
+semseg_test_subset_conv8_hidden_output = np.resize(semseg_test_subset_conv8_hidden_output, (204800,256))
+
 semseg_test_subset_predictions = th.from_numpy(semseg_test_subset_predictions)
 semseg_test_subset_predictions = semseg_test_subset_predictions.permute(0, 2, 1).contiguous()
 semseg_test_subset_predictions = semseg_test_subset_predictions.max(dim=2)[1]
 semseg_test_subset_predictions = semseg_test_subset_predictions.detach().cpu().numpy()
-np.unique(semseg_test_subset_predictions)
-np.unique(semseg_test_subset_predictions).shape
+semseg_test_subset_predictions = np.resize(semseg_test_subset_predictions, (204800,1)).flatten()
+semseg_test_subset_part_labels = np.resize(semseg_test_subset_part_labels, (204800,1)).flatten()
 
 # part masks - match number of parts with color scheme
 indices_part_0 = np.array(semseg_test_subset_predictions == 0)
