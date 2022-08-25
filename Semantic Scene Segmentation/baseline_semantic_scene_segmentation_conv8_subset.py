@@ -8,7 +8,7 @@ import pandas as pd
 
 # importing data - default numpy array format
 conv8_output = th.load('semseg_test_conv8_hidden_output_2048_100.pt')
-part_labels = th.load('semseg_test_part_labels_2048_100.pt')
+labels = th.load('semseg_test_labels_2048_100.pt')
 predictions = th.load('semseg_test_predictions_2048_100.pt')
 
 # dropping the batch size dimension of the tensors
@@ -17,7 +17,7 @@ conv8_output = np.moveaxis(conv8_output, 2, 1)
 conv8_output = np.resize(conv8_output, (204800,256))
 
 # part labels
-part_labels = part_labels.flatten()
+labels = labels.flatten()
 # predictions
 predictions = predictions.permute(0, 2, 1).contiguous()
 predictions = predictions.max(dim=2)[1]

@@ -403,9 +403,9 @@ def test(args, io):
             PART_LABELS = torch.from_numpy(PART_LABELS)
     
             # saving locally
-            torch.save(PREDS, 'outputs/%s/semseg_test_predictions.pt' % args.exp_name)
-            torch.save(FEATS, 'outputs/%s/semseg_test_conv8_hidden_output.pt' % args.exp_name)
-            torch.save(PART_LABELS, 'outputs/%s/semseg_test_part_labels.pt' % args.exp_name)
+            torch.save(PREDS, 'outputs/%s/semseg_test_predictions_2048_100.pt' % args.exp_name)
+            torch.save(FEATS, 'outputs/%s/semseg_test_conv8_hidden_output_2048_100.pt' % args.exp_name)
+            torch.save(PART_LABELS, 'outputs/%s/semseg_test_labels_2048_100.pt' % args.exp_name)
 
 #### -------------------------------------------------------------------- #####
 

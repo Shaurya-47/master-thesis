@@ -6,37 +6,38 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pytorch3d.loss import chamfer_distance as cd
 
-# importing data
-semseg_test_subset_conv8_hidden_output = th.load('semseg_test_conv8_hidden_output_2048_100.pt').detach().numpy()
-semseg_test_subset_part_labels = th.load('semseg_test_part_labels_2048_100.pt').detach().numpy()
-semseg_test_subset_predictions = th.load('semseg_test_predictions_2048_100.pt').detach().numpy()
+# importing data - default numpy array format
+conv8_output = th.load('semseg_test_conv8_hidden_output_2048_100.pt')
+labels = th.load('semseg_test_labels_2048_100.pt')
+predictions = th.load('semseg_test_predictions_2048_100.pt')
 
-# restructuring
-semseg_test_subset_conv8_hidden_output = np.array(semseg_test_subset_conv8_hidden_output)
-semseg_test_subset_conv8_hidden_output = np.moveaxis(semseg_test_subset_conv8_hidden_output, 2, 1)
-semseg_test_subset_conv8_hidden_output = np.resize(semseg_test_subset_conv8_hidden_output, (204800,256))
+# dropping the batch size dimension of the tensors
+conv8_output = np.array(conv8_output)
+conv8_output = np.moveaxis(conv8_output, 2, 1)
+conv8_output = np.resize(conv8_output, (204800,256))
 
-semseg_test_subset_predictions = th.from_numpy(semseg_test_subset_predictions)
-semseg_test_subset_predictions = semseg_test_subset_predictions.permute(0, 2, 1).contiguous()
-semseg_test_subset_predictions = semseg_test_subset_predictions.max(dim=2)[1]
-semseg_test_subset_predictions = semseg_test_subset_predictions.detach().cpu().numpy()
-semseg_test_subset_predictions = np.resize(semseg_test_subset_predictions, (204800,1)).flatten()
-semseg_test_subset_part_labels = np.resize(semseg_test_subset_part_labels, (204800,1)).flatten()
+# part labels
+labels = labels.flatten()
+# predictions
+predictions = predictions.permute(0, 2, 1).contiguous()
+predictions = predictions.max(dim=2)[1]
+predictions = predictions.detach().cpu().numpy()
+predictions = np.resize(predictions, (204800,1)).flatten()
 
 # part masks - match number of parts with color scheme
-indices_part_0 = np.array(semseg_test_subset_predictions == 0)
-indices_part_1 = np.array(semseg_test_subset_predictions == 1)
-indices_part_2 = np.array(semseg_test_subset_predictions == 2)
-indices_part_3 = np.array(semseg_test_subset_predictions == 3)
-indices_part_4 = np.array(semseg_test_subset_predictions == 4)
-indices_part_5 = np.array(semseg_test_subset_predictions == 5)
-indices_part_6 = np.array(semseg_test_subset_predictions == 6)
-indices_part_7 = np.array(semseg_test_subset_predictions == 7)
-indices_part_8 = np.array(semseg_test_subset_predictions == 8)
-indices_part_9 = np.array(semseg_test_subset_predictions == 9)
-indices_part_10 = np.array(semseg_test_subset_predictions == 10)
-indices_part_11 = np.array(semseg_test_subset_predictions == 11)
-indices_part_12 = np.array(semseg_test_subset_predictions == 12)
+indices_part_0 = np.array(predictions == 0)
+indices_part_1 = np.array(predictions == 1)
+indices_part_2 = np.array(predictions == 2)
+indices_part_3 = np.array(predictions == 3)
+indices_part_4 = np.array(predictions == 4)
+indices_part_5 = np.array(predictions == 5)
+indices_part_6 = np.array(predictions == 6)
+indices_part_7 = np.array(predictions == 7)
+indices_part_8 = np.array(predictions == 8)
+indices_part_9 = np.array(predictions == 9)
+indices_part_10 = np.array(predictions == 10)
+indices_part_11 = np.array(predictions == 11)
+indices_part_12 = np.array(predictions == 12)
 
 
 # applying part mask to get subsets for all examples
@@ -56,22 +57,22 @@ conv_8_hidden_output_part_11 = []
 conv_8_hidden_output_part_12 = []
 
 
-for i in range(semseg_test_subset_predictions.shape[0]):
+for i in range(predictions.shape[0]):
     
     # subsetting
-    inner_result_0 = semseg_test_subset_conv8_hidden_output[i][indices_part_0[i]]
-    inner_result_1 = semseg_test_subset_conv8_hidden_output[i][indices_part_1[i]]
-    inner_result_2 = semseg_test_subset_conv8_hidden_output[i][indices_part_2[i]]
-    inner_result_3 = semseg_test_subset_conv8_hidden_output[i][indices_part_3[i]]
-    inner_result_4 = semseg_test_subset_conv8_hidden_output[i][indices_part_4[i]]
-    inner_result_5 = semseg_test_subset_conv8_hidden_output[i][indices_part_5[i]]
-    inner_result_6 = semseg_test_subset_conv8_hidden_output[i][indices_part_6[i]]
-    inner_result_7 = semseg_test_subset_conv8_hidden_output[i][indices_part_7[i]]
-    inner_result_8 = semseg_test_subset_conv8_hidden_output[i][indices_part_8[i]]
-    inner_result_9 = semseg_test_subset_conv8_hidden_output[i][indices_part_9[i]]
-    inner_result_10 = semseg_test_subset_conv8_hidden_output[i][indices_part_10[i]]
-    inner_result_11 = semseg_test_subset_conv8_hidden_output[i][indices_part_11[i]]
-    inner_result_12 = semseg_test_subset_conv8_hidden_output[i][indices_part_12[i]]
+    inner_result_0 = conv8_output[i][indices_part_0[i]]
+    inner_result_1 = conv8_output[i][indices_part_1[i]]
+    inner_result_2 = conv8_output[i][indices_part_2[i]]
+    inner_result_3 = conv8_output[i][indices_part_3[i]]
+    inner_result_4 = conv8_output[i][indices_part_4[i]]
+    inner_result_5 = conv8_output[i][indices_part_5[i]]
+    inner_result_6 = conv8_output[i][indices_part_6[i]]
+    inner_result_7 = conv8_output[i][indices_part_7[i]]
+    inner_result_8 = conv8_output[i][indices_part_8[i]]
+    inner_result_9 = conv8_output[i][indices_part_9[i]]
+    inner_result_10 = conv8_output[i][indices_part_10[i]]
+    inner_result_11 = conv8_output[i][indices_part_11[i]]
+    inner_result_12 = conv8_output[i][indices_part_12[i]]
     
         
     # appending

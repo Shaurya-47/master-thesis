@@ -8,22 +8,23 @@ from scipy.sparse import csr_matrix, csgraph
 from umap.umap_ import compute_membership_strengths, smooth_knn_dist, make_epochs_per_sample, simplicial_set_embedding, find_ab_params
 import scipy
 
-# importing data
-conv8_output = th.load('semseg_test_conv8_hidden_output_2048_100.pt').detach().numpy()
-part_labels_subset = th.load('semseg_test_part_labels_2048_100.pt').detach().numpy()
-predictions_subset = th.load('semseg_test_predictions_2048_100.pt').detach().numpy()
+# importing data - default numpy array format
+conv8_output = th.load('semseg_test_conv8_hidden_output_2048_100.pt')
+labels = th.load('semseg_test_labels_2048_100.pt')
+predictions = th.load('semseg_test_predictions_2048_100.pt')
 
-# restructuring
+# dropping the batch size dimension of the tensors
 conv8_output = np.array(conv8_output)
 conv8_output = np.moveaxis(conv8_output, 2, 1)
 conv8_output = np.resize(conv8_output, (204800,256))
 
-predictions_subset = th.from_numpy(predictions_subset)
-predictions_subset = predictions_subset.permute(0, 2, 1).contiguous()
-predictions_subset = predictions_subset.max(dim=2)[1]
-predictions_subset = predictions_subset.detach().cpu().numpy()
-predictions_subset = np.resize(predictions_subset, (204800,1)).flatten()
-part_labels_subset = np.resize(part_labels_subset, (204800,1)).flatten()
+# part labels
+labels = labels.flatten()
+# predictions
+predictions = predictions.permute(0, 2, 1).contiguous()
+predictions = predictions.max(dim=2)[1]
+predictions = predictions.detach().cpu().numpy()
+predictions = np.resize(predictions, (204800,1)).flatten()
 
 #running UMAP on the embedding
 reducer = umap.UMAP(min_dist = 0.5, n_neighbors = 300, random_state = 1)
@@ -36,7 +37,7 @@ graph_sparse = reducer.graph_
 
 # creating an index list for the start of each example
 examples = []
-for i in range(len(predictions_subset)):
+for i in range(len(predictions)):
     if i % 2048 == 0:
         examples.append(i)
 examples_forward = examples[1:]
@@ -47,7 +48,7 @@ for j,k in zip(examples, examples_forward):
     example_ranges.append(range(j,k))
 
 # appending the last index to the list
-example_ranges.append(range(len(predictions_subset)-2048, len(predictions_subset)))
+example_ranges.append(range(len(predictions)-2048, len(predictions)))
 
 # edited version where the part and intersection Booleans are in the shape 
 # of the Adjacency Matrix
@@ -61,11 +62,11 @@ for ran in example_ranges:
     
     # iterating over all the parts in the range of an example and getting 
     # the indices of the rows containing the part (via prediction/label)
-    for part in np.unique(predictions_subset[ran[0]:ran[-1]+1]):
+    for part in np.unique(predictions[ran[0]:ran[-1]+1]):
 
-        part_indices = np.array(predictions_subset == part)
+        part_indices = np.array(predictions == part)
         part_indices[0:ran[0]] = False
-        part_indices[ran[-1]+1:len(predictions_subset)] = False
+        part_indices[ran[-1]+1:len(predictions)] = False
         part_indices_list.append(part_indices)
   
         part_list.append(part)
