@@ -538,8 +538,8 @@ def test(args, io):
     
     # converting all to pytorch tensors and saving locally    
     torch.save(conv9_hidden_output_subset, 'outputs/%s/conv9_hidden_output_subset.pt' % args.exp_name)
-    torch.save(preds_subset, 'outputs/%s/conv9_hidden_output_subset.pt' % args.exp_name)
-    torch.save(part_labels_subset, 'outputs/%s/conv9_hidden_output_subset.pt' % args.exp_name)
+    torch.save(preds_subset, 'outputs/%s/preds_subset.pt' % args.exp_name)
+    torch.save(part_labels_subset, 'outputs/%s/part_labels_subset.pt' % args.exp_name)
 
 #### -------------------------------------------------------------------- #####
 

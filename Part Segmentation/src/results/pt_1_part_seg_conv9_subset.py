@@ -5,128 +5,14 @@ import umap
 import matplotlib.pyplot as plt
 import pandas as pd
 from pytorch3d.loss import chamfer_distance as cd
-#from sklearn.preprocessing import StandardScaler
-#from sklearn.neighbors import NearestNeighbors
 
 # importing data
-airplane_test_subset_conv9_hidden_output = th.load('airplane_test_subset_conv9_hidden_output.pt')
-bag_test_subset_conv9_hidden_output = th.load('bag_test_subset_conv9_hidden_output.pt')
-cap_test_subset_conv9_hidden_output = th.load('cap_test_subset_conv9_hidden_output.pt')
-car_test_subset_conv9_hidden_output = th.load('car_test_subset_conv9_hidden_output.pt')
-chair_test_subset_conv9_hidden_output = th.load('chair_test_subset_conv9_hidden_output.pt')
-earphone_test_subset_conv9_hidden_output = th.load('earphone_test_subset_conv9_hidden_output.pt')
-guitar_test_subset_conv9_hidden_output = th.load('guitar_test_subset_conv9_hidden_output.pt')
-knife_test_subset_conv9_hidden_output = th.load('knife_test_subset_conv9_hidden_output.pt')
-lamp_test_subset_conv9_hidden_output = th.load('lamp_test_subset_conv9_hidden_output.pt')
-laptop_test_subset_conv9_hidden_output = th.load('laptop_test_subset_conv9_hidden_output.pt')
-motorbike_test_subset_conv9_hidden_output = th.load('motorbike_test_subset_conv9_hidden_output.pt')
-mug_test_subset_conv9_hidden_output = th.load('mug_test_subset_conv9_hidden_output.pt')
-pistol_test_subset_conv9_hidden_output = th.load('pistol_test_subset_conv9_hidden_output.pt')
-rocket_test_subset_conv9_hidden_output = th.load('rocket_test_subset_conv9_hidden_output.pt')
-skateboard_test_subset_conv9_hidden_output = th.load('skateboard_test_subset_conv9_hidden_output.pt')
-table_test_subset_conv9_hidden_output = th.load('table_test_subset_conv9_hidden_output.pt')
+conv9_hidden_output_subset = th.load('./data/conv9_hidden_output_subset.pt')
+preds_subset = th.load('./data/preds_subset.pt')
+part_labels_subset = th.load('./data/part_labels_subset.pt')
 
-airplane_test_subset_part_labels = th.load('airplane_test_subset_part_labels.pt')
-bag_test_subset_part_labels = th.load('bag_test_subset_part_labels.pt')
-cap_test_subset_part_labels = th.load('cap_test_subset_part_labels.pt')
-car_test_subset_part_labels = th.load('car_test_subset_part_labels.pt')
-chair_test_subset_part_labels = th.load('chair_test_subset_part_labels.pt')
-earphone_test_subset_part_labels = th.load('earphone_test_subset_part_labels.pt')
-guitar_test_subset_part_labels = th.load('guitar_test_subset_part_labels.pt')
-knife_test_subset_part_labels = th.load('knife_test_subset_part_labels.pt')
-lamp_test_subset_part_labels = th.load('lamp_test_subset_part_labels.pt')
-laptop_test_subset_part_labels = th.load('laptop_test_subset_part_labels.pt')
-motorbike_test_subset_part_labels = th.load('motorbike_test_subset_part_labels.pt')
-mug_test_subset_part_labels = th.load('mug_test_subset_part_labels.pt')
-pistol_test_subset_part_labels = th.load('pistol_test_subset_part_labels.pt')
-rocket_test_subset_part_labels = th.load('rocket_test_subset_part_labels.pt')
-skateboard_test_subset_part_labels = th.load('skateboard_test_subset_part_labels.pt')
-table_test_subset_part_labels = th.load('table_test_subset_part_labels.pt')
+### reconvert to original form here - if it is really needed; OTHER WAY?????
 
-airplane_test_subset_predictions = th.load('airplane_test_subset_predictions.pt')
-bag_test_subset_predictions = th.load('bag_test_subset_predictions.pt')
-cap_test_subset_predictions = th.load('cap_test_subset_predictions.pt')
-car_test_subset_predictions = th.load('car_test_subset_predictions.pt')
-chair_test_subset_predictions = th.load('chair_test_subset_predictions.pt')
-earphone_test_subset_predictions = th.load('earphone_test_subset_predictions.pt')
-guitar_test_subset_predictions = th.load('guitar_test_subset_predictions.pt')
-knife_test_subset_predictions = th.load('knife_test_subset_predictions.pt')
-lamp_test_subset_predictions = th.load('lamp_test_subset_predictions.pt')
-laptop_test_subset_predictions = th.load('laptop_test_subset_predictions.pt')
-motorbike_test_subset_predictions = th.load('motorbike_test_subset_predictions.pt')
-mug_test_subset_predictions = th.load('mug_test_subset_predictions.pt')
-pistol_test_subset_predictions = th.load('pistol_test_subset_predictions.pt')
-rocket_test_subset_predictions = th.load('rocket_test_subset_predictions.pt')
-skateboard_test_subset_predictions = th.load('skateboard_test_subset_predictions.pt')
-table_test_subset_predictions = th.load('table_test_subset_predictions.pt')
-
-# restructuring tensors as batch_size x num_points x dimension
-airplane_conv9_hidden_output = np.moveaxis(airplane_test_subset_conv9_hidden_output, 2, 1)
-bag_conv9_hidden_output = np.moveaxis(bag_test_subset_conv9_hidden_output, 2, 1)
-cap_conv9_hidden_output = np.moveaxis(cap_test_subset_conv9_hidden_output, 2, 1)
-car_conv9_hidden_output = np.moveaxis(car_test_subset_conv9_hidden_output, 2, 1)
-chair_conv9_hidden_output = np.moveaxis(chair_test_subset_conv9_hidden_output, 2, 1)
-earphone_conv9_hidden_output = np.moveaxis(earphone_test_subset_conv9_hidden_output, 2, 1)
-guitar_conv9_hidden_output = np.moveaxis(guitar_test_subset_conv9_hidden_output, 2, 1)
-knife_conv9_hidden_output = np.moveaxis(knife_test_subset_conv9_hidden_output, 2, 1)
-lamp_conv9_hidden_output = np.moveaxis(lamp_test_subset_conv9_hidden_output, 2, 1)
-laptop_conv9_hidden_output = np.moveaxis(laptop_test_subset_conv9_hidden_output, 2, 1)
-motorbike_conv9_hidden_output = np.moveaxis(motorbike_test_subset_conv9_hidden_output, 2, 1)
-mug_conv9_hidden_output = np.moveaxis(mug_test_subset_conv9_hidden_output, 2, 1)
-pistol_conv9_hidden_output = np.moveaxis(pistol_test_subset_conv9_hidden_output, 2, 1)
-rocket_conv9_hidden_output = np.moveaxis(rocket_test_subset_conv9_hidden_output, 2, 1)
-skateboard_conv9_hidden_output = np.moveaxis(skateboard_test_subset_conv9_hidden_output, 2, 1)
-table_conv9_hidden_output = np.moveaxis(table_test_subset_conv9_hidden_output, 2, 1)
-
-# combining
-predictions_subset = np.vstack((airplane_test_subset_predictions,
-                                bag_test_subset_predictions,
-                                cap_test_subset_predictions,
-                                car_test_subset_predictions,
-                                chair_test_subset_predictions,
-                                earphone_test_subset_predictions,
-                                guitar_test_subset_predictions,
-                                knife_test_subset_predictions,
-                                lamp_test_subset_predictions,
-                                laptop_test_subset_predictions,
-                                motorbike_test_subset_predictions,
-                                mug_test_subset_predictions,
-                                pistol_test_subset_predictions,
-                                rocket_test_subset_predictions,
-                                skateboard_test_subset_predictions,
-                                table_test_subset_predictions
-                                ))
-
-predictions_subset = th.from_numpy(predictions_subset)
-predictions_subset = predictions_subset.permute(0, 2, 1).contiguous()
-predictions_subset = predictions_subset.max(dim=2)[1]
-predictions_subset = predictions_subset.detach().cpu().numpy()
-
-# checks
-
-# part coherence check
-
-# part_coherence_check = []
-# for i in range(predictions_subset.shape[0]):
-#     result = np.unique(predictions_subset[i])
-#     part_coherence_check.append(result)
-    
-# average number of parts
-
-# count = []
-# for i in part_coherence_check:
-#     count.append(i.shape[0])   
-#np.mean(count)
-
-# NOTE: can also use part labels here if required
-
-predictions_subset = np.resize(predictions_subset, (163840,1)).flatten()
-np.unique(predictions_subset)
-np.unique(predictions_subset).shape # 48/50 as a chair part and a motorcycle part are never predicted
-
-# reshaping the array - batch_size will now be subdivided into parts
-# object (parts): overall 48 parts (2 missing) and 48x10 = 480 entries
-#np.unique(part_labels_subset)
 
 # need predictions for each object separately
 airplane_test_subset_predictions = th.from_numpy(airplane_test_subset_predictions)
