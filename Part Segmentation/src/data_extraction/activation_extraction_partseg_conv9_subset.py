@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import argparse
 import torch
+import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -459,59 +460,86 @@ def test(args, io):
     rocket_part_labels_subset = part_labels[indices_rocket][0:10]
     skateboard_part_labels_subset = part_labels[indices_skateboard][0:10]
     table_part_labels_subset = part_labels[indices_table][0:10]
+    
+    
 
-
+    
+    # combining all respective object-wise tensors into single tensors
+    
+    # hidden output
+    conv9_hidden_output_subset = np.vstack((airplane_conv9_hidden_output_subset, 
+                                            bag_conv9_hidden_output_subset,
+                                            cap_conv9_hidden_output_subset,
+                                            car_conv9_hidden_output_subset,
+                                            chair_conv9_hidden_output_subset,
+                                            earphone_conv9_hidden_output_subset,
+                                            guitar_conv9_hidden_output_subset,
+                                            knife_conv9_hidden_output_subset,
+                                            lamp_conv9_hidden_output_subset,
+                                            laptop_conv9_hidden_output_subset,
+                                            motorbike_conv9_hidden_output_subset,
+                                            mug_conv9_hidden_output_subset,
+                                            pistol_conv9_hidden_output_subset,
+                                            rocket_conv9_hidden_output_subset,
+                                            skateboard_conv9_hidden_output_subset,
+                                            table_conv9_hidden_output_subset
+                                            ))
+    
+    # dropping the batch size dimension from the tensor
+    conv9_hidden_output_subset = np.moveaxis(conv9_hidden_output_subset, 2, 1)
+    conv9_hidden_output_subset = np.resize(conv9_hidden_output_subset, (163840,256))
+    
+    # predictions
+    preds_subset =               np.vstack((airplane_preds_subset, 
+                                            bag_preds_subset,
+                                            cap_preds_subset,
+                                            car_preds_subset,
+                                            chair_preds_subset,
+                                            earphone_preds_subset,
+                                            guitar_preds_subset,
+                                            knife_preds_subset,
+                                            lamp_preds_subset,
+                                            laptop_preds_subset,
+                                            motorbike_preds_subset,
+                                            mug_preds_subset,
+                                            pistol_preds_subset,
+                                            rocket_preds_subset,
+                                            skateboard_preds_subset,
+                                            table_preds_subset
+                                            ))
+    
+    # dropping the batch size dimension from the tensor
+    preds_subset = th.from_numpy(preds_subset)
+    preds_subset = preds_subset.permute(0, 2, 1).contiguous()
+    preds_subset = preds_subset.max(dim=2)[1]
+    preds_subset = np.resize(preds_subset, (163840,1)).flatten()
+    
+    # part labels
+    part_labels_subset =         np.vstack((airplane_part_labels_subset, 
+                                            bag_part_labels_subset,
+                                            cap_part_labels_subset,
+                                            car_part_labels_subset,
+                                            chair_part_labels_subset,
+                                            earphone_part_labels_subset,
+                                            guitar_part_labels_subset,
+                                            knife_part_labels_subset,
+                                            lamp_part_labels_subset,
+                                            laptop_part_labels_subset,
+                                            motorbike_part_labels_subset,
+                                            mug_part_labels_subset,
+                                            pistol_part_labels_subset,
+                                            rocket_part_labels_subset,
+                                            skateboard_part_labels_subset,
+                                            table_part_labels_subset
+                                            ))
+    
+    # dropping the batch size dimension from the tensor
+    part_labels_subset = np.resize(part_labels_subset, (163840,1)).flatten()
+    
     # converting all to pytorch tensors and saving locally    
-    torch.save(airplane_preds_subset, 'outputs/%s/airplane_test_subset_predictions.pt' % args.exp_name)
-    torch.save(bag_preds_subset, 'outputs/%s/bag_test_subset_predictions.pt' % args.exp_name)
-    torch.save(cap_preds_subset, 'outputs/%s/cap_test_subset_predictions.pt' % args.exp_name)
-    torch.save(car_preds_subset, 'outputs/%s/car_test_subset_predictions.pt' % args.exp_name)
-    torch.save(chair_preds_subset, 'outputs/%s/chair_test_subset_predictions.pt' % args.exp_name)
-    torch.save(earphone_preds_subset, 'outputs/%s/earphones_test_subset_predictions.pt' % args.exp_name)
-    torch.save(guitar_preds_subset, 'outputs/%s/guitar_test_subset_predictions.pt' % args.exp_name)
-    torch.save(knife_preds_subset, 'outputs/%s/knife_test_subset_predictions.pt' % args.exp_name)
-    torch.save(lamp_preds_subset, 'outputs/%s/lamp_test_subset_predictions.pt' % args.exp_name)
-    torch.save(laptop_preds_subset, 'outputs/%s/laptop_test_subset_predictions.pt' % args.exp_name)
-    torch.save(motorbike_preds_subset, 'outputs/%s/motorbike_test_subset_predictions.pt' % args.exp_name)
-    torch.save(mug_preds_subset, 'outputs/%s/mug_test_subset_predictions.pt' % args.exp_name)
-    torch.save(pistol_preds_subset, 'outputs/%s/pistol_test_subset_predictions.pt' % args.exp_name)
-    torch.save(rocket_preds_subset, 'outputs/%s/rocket_test_subset_predictions.pt' % args.exp_name)
-    torch.save(skateboard_preds_subset, 'outputs/%s/skateboard_test_subset_predictions.pt' % args.exp_name)
-    torch.save(table_preds_subset, 'outputs/%s/table_test_subset_predictions.pt' % args.exp_name)
-    
-    torch.save(airplane_conv9_hidden_output_subset, 'outputs/%s/airplane_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(bag_conv9_hidden_output_subset, 'outputs/%s/bag_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(cap_conv9_hidden_output_subset, 'outputs/%s/cap_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(car_conv9_hidden_output_subset, 'outputs/%s/car_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(chair_conv9_hidden_output_subset, 'outputs/%s/chair_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(earphone_conv9_hidden_output_subset, 'outputs/%s/earphone_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(guitar_conv9_hidden_output_subset, 'outputs/%s/guitar_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(knife_conv9_hidden_output_subset, 'outputs/%s/knife_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(lamp_conv9_hidden_output_subset, 'outputs/%s/lamp_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(laptop_conv9_hidden_output_subset, 'outputs/%s/laptop_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(motorbike_conv9_hidden_output_subset, 'outputs/%s/motorbike_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(mug_conv9_hidden_output_subset, 'outputs/%s/mug_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(pistol_conv9_hidden_output_subset, 'outputs/%s/pistol_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(rocket_conv9_hidden_output_subset, 'outputs/%s/rocket_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(skateboard_conv9_hidden_output_subset, 'outputs/%s/skateboard_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(table_conv9_hidden_output_subset, 'outputs/%s/table_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    
-    torch.save(airplane_part_labels_subset, 'outputs/%s/airplane_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(bag_part_labels_subset, 'outputs/%s/bag_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(cap_part_labels_subset, 'outputs/%s/cap_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(car_part_labels_subset, 'outputs/%s/car_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(chair_part_labels_subset, 'outputs/%s/chair_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(earphone_part_labels_subset, 'outputs/%s/earphone_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(guitar_part_labels_subset, 'outputs/%s/guitar_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(knife_part_labels_subset, 'outputs/%s/knife_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(lamp_part_labels_subset, 'outputs/%s/lamp_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(laptop_part_labels_subset, 'outputs/%s/laptop_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(motorbike_part_labels_subset, 'outputs/%s/motorbike_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(mug_part_labels_subset, 'outputs/%s/mug_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(pistol_part_labels_subset, 'outputs/%s/pistol_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(rocket_part_labels_subset, 'outputs/%s/rocket_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(skateboard_part_labels_subset, 'outputs/%s/skateboard_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(table_part_labels_subset, 'outputs/%s/table_test_subset_part_labels.pt' % args.exp_name)
+    torch.save(conv9_hidden_output_subset, 'outputs/%s/conv9_hidden_output_subset.pt' % args.exp_name)
+    torch.save(preds_subset, 'outputs/%s/conv9_hidden_output_subset.pt' % args.exp_name)
+    torch.save(part_labels_subset, 'outputs/%s/conv9_hidden_output_subset.pt' % args.exp_name)
 
 #### -------------------------------------------------------------------- #####
 
