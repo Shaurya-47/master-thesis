@@ -490,23 +490,23 @@ def test(args, io):
     conv9_hidden_output_subset = np.resize(conv9_hidden_output_subset, (163840,256))
     
     # predictions
-    preds_subset =               np.vstack((airplane_preds_subset, 
-                                            bag_preds_subset,
-                                            cap_preds_subset,
-                                            car_preds_subset,
-                                            chair_preds_subset,
-                                            earphone_preds_subset,
-                                            guitar_preds_subset,
-                                            knife_preds_subset,
-                                            lamp_preds_subset,
-                                            laptop_preds_subset,
-                                            motorbike_preds_subset,
-                                            mug_preds_subset,
-                                            pistol_preds_subset,
-                                            rocket_preds_subset,
-                                            skateboard_preds_subset,
-                                            table_preds_subset
-                                            ))
+    preds_subset = np.vstack((airplane_preds_subset, 
+                              bag_preds_subset,
+                              cap_preds_subset,
+                              car_preds_subset,
+                              chair_preds_subset,
+                              earphone_preds_subset,
+                              guitar_preds_subset,
+                              knife_preds_subset,
+                              lamp_preds_subset,
+                              laptop_preds_subset,
+                              motorbike_preds_subset,
+                              mug_preds_subset,
+                              pistol_preds_subset,
+                              rocket_preds_subset,
+                              skateboard_preds_subset,
+                              table_preds_subset
+                              ))
     
     # dropping the batch size dimension from the tensor
     preds_subset = th.from_numpy(preds_subset)
@@ -515,23 +515,23 @@ def test(args, io):
     preds_subset = np.resize(preds_subset, (163840,1)).flatten()
     
     # part labels
-    part_labels_subset =         np.vstack((airplane_part_labels_subset, 
-                                            bag_part_labels_subset,
-                                            cap_part_labels_subset,
-                                            car_part_labels_subset,
-                                            chair_part_labels_subset,
-                                            earphone_part_labels_subset,
-                                            guitar_part_labels_subset,
-                                            knife_part_labels_subset,
-                                            lamp_part_labels_subset,
-                                            laptop_part_labels_subset,
-                                            motorbike_part_labels_subset,
-                                            mug_part_labels_subset,
-                                            pistol_part_labels_subset,
-                                            rocket_part_labels_subset,
-                                            skateboard_part_labels_subset,
-                                            table_part_labels_subset
-                                            ))
+    part_labels_subset = np.vstack((airplane_part_labels_subset, 
+                                    bag_part_labels_subset,
+                                    cap_part_labels_subset,
+                                    car_part_labels_subset,
+                                    chair_part_labels_subset,
+                                    earphone_part_labels_subset,
+                                    guitar_part_labels_subset,
+                                    knife_part_labels_subset,
+                                    lamp_part_labels_subset,
+                                    laptop_part_labels_subset,
+                                    motorbike_part_labels_subset,
+                                    mug_part_labels_subset,
+                                    pistol_part_labels_subset,
+                                    rocket_part_labels_subset,
+                                    skateboard_part_labels_subset,
+                                    table_part_labels_subset
+                                    ))
     
     # dropping the batch size dimension from the tensor
     part_labels_subset = np.resize(part_labels_subset, (163840,1)).flatten()

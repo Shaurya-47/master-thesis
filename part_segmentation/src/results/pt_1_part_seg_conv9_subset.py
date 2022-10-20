@@ -11,7 +11,11 @@ conv9_hidden_output_subset = th.load('./data/conv9_hidden_output_subset.pt')
 preds_subset = th.load('./data/preds_subset.pt')
 part_labels_subset = th.load('./data/part_labels_subset.pt')
 
-### reconvert to original form here - if it is really needed; OTHER WAY?????
+
+
+### reconvert to original form here - can think of alternate way later after 
+# all is done
+
 
 
 # need predictions for each object separately
