@@ -1,8 +1,64 @@
 # importing libraries
 import numpy as np
 import pandas as pd
+import torch as th
 import umap
 import matplotlib.pyplot as plt
+from sklearn.neighbors import KNeighborsClassifier
+
+# function to obtain a UMAP 2D embedding from high dimensional data
+def projection(hd_data, mindist = 0.5, neighbors = 300, rs = 1):
+    # defining the UMAP reducer
+    reducer = umap.UMAP(min_dist = mindist, n_neighbors = neighbors, random_state = rs) # this is the original baseline
+    # applying UMAP to reduce the dimensionality to 2
+    embedding = reducer.fit_transform(hd_data)
+    
+    return embedding
+
+# function to visualize the UMAP embedding
+def visualize_projection(embedding_input, string_labels, color_map, title):
+    plt.figure(figsize=(8,6), dpi=1000)
+    plt.scatter(embedding_input[:,0], embedding_input[:,1], s=0.05,
+                c=string_labels.map(color_map))
+    plt.title(title, fontsize=24)
+    plt.show()
+
+# function to calculate the average neighborhood hit (NH) score across a set of points
+def neighborhood_hit(data, labels, n_neighbors):
+    
+    # getting the KNN indices for each point in the dataset
+    neighbors = KNeighborsClassifier(n_neighbors=n_neighbors)
+    neighbors.fit(data, labels)
+    neighbor_indices = neighbors.kneighbors()[1]
+    neighbor_labels = labels[neighbor_indices]
+    
+    # computing the scores per point using prediction or label information
+    neighborhood_hit_scores = []
+    for i in range(0,len(labels)):
+        nh_score_i = (neighbor_labels[i] == labels[i]).mean()
+        neighborhood_hit_scores.append(nh_score_i)
+    
+    # returning the average NH score across all points
+    return np.array(neighborhood_hit_scores).mean()
+    
+# defined color map for part segmentation
+colormap = {"airplane_0": "#CFD8DC", "airplane_1": "#90A4AE", "airplane_2": "#607D8B", "airplane_3": "#455A64",
+            "bag_0": "#BDBDBD", "bag_1": "#616161",
+            "cap_0": "#FF8A65", "cap_1": "#E64A19",
+            "car_0": "#BCAAA4", "car_1": "#8D6E63", "car_2": "#6D4C41", "car_3": "#4E342E",
+            "chair_0": "#FFE0B2", "chair_1": "#FFB74D", "chair_2": "#FB8C00", #, "olivedrab", # chair part
+            "earphone_0": "#FFF9C4", "earphone_1": "#FFF176", "earphone_2": "#FDD835",
+            "guitar_0": "#DCE775", "guitar_1": "#C0CA33", "guitar_2": "#9E9D24",
+            "knife_0": "#4CAF50", "knife_1": "#1B5E20",
+            "lamp_0": "#80CBC4", "lamp_1": "#26A69A", "lamp_2": "#00897B", "lamp_3": "#004D40",
+            "laptop_0": "#80DEEA", "laptop_1": "#00BCD4",
+            "motor_0": "#BBDEFB", "motor_1": "#90CAF9", "motor_2": "#64B5F6", "motor_3": "#2196F3", "motor_4": "#1976D2", "motor_5": "#0D47A1",#  "mediumpurple" # secondlast color (motorbike part)
+            "mug_0": "#3F51B5", "mug_1": "#1A237E",
+            "pistol_0": "#B39DDB", "pistol_1": "#7E57C2", "pistol_2": "#512DA8",
+            "rocket_0": "#EF9A9A", "rocket_1": "#EF5350", "rocket_2": "#C62828",
+            "skateboard_0": "#F8BBD0", "skateboard_1": "#F06292", "skateboard_2": "#E91E63",
+            "table_0": "#E1BEE7", "table_1": "#BA68C8", "table_2": "#9C27B0"
+            }
 
 # function to arrign string labels to model predictions/dataset labels
 def class_labeler(input_array):
@@ -67,39 +123,9 @@ def class_labeler(input_array):
     
     return input_array
 
-# defined color map for part segmentation
-colormap = {"airplane_0": "#CFD8DC", "airplane_1": "#90A4AE", "airplane_2": "#607D8B", "airplane_3": "#455A64",
-            "bag_0": "#BDBDBD", "bag_1": "#616161",
-            "cap_0": "#FF8A65", "cap_1": "#E64A19",
-            "car_0": "#BCAAA4", "car_1": "#8D6E63", "car_2": "#6D4C41", "car_3": "#4E342E",
-            "chair_0": "#FFE0B2", "chair_1": "#FFB74D", "chair_2": "#FB8C00", #, "olivedrab", # chair part
-            "earphone_0": "#FFF9C4", "earphone_1": "#FFF176", "earphone_2": "#FDD835",
-            "guitar_0": "#DCE775", "guitar_1": "#C0CA33", "guitar_2": "#9E9D24",
-            "knife_0": "#4CAF50", "knife_1": "#1B5E20",
-            "lamp_0": "#80CBC4", "lamp_1": "#26A69A", "lamp_2": "#00897B", "lamp_3": "#004D40",
-            "laptop_0": "#80DEEA", "laptop_1": "#00BCD4",
-            "motor_0": "#BBDEFB", "motor_1": "#90CAF9", "motor_2": "#64B5F6", "motor_3": "#2196F3", "motor_4": "#1976D2", "motor_5": "#0D47A1",#  "mediumpurple" # secondlast color (motorbike part)
-            "mug_0": "#3F51B5", "mug_1": "#1A237E",
-            "pistol_0": "#B39DDB", "pistol_1": "#7E57C2", "pistol_2": "#512DA8",
-            "rocket_0": "#EF9A9A", "rocket_1": "#EF5350", "rocket_2": "#C62828",
-            "skateboard_0": "#F8BBD0", "skateboard_1": "#F06292", "skateboard_2": "#E91E63",
-            "table_0": "#E1BEE7", "table_1": "#BA68C8", "table_2": "#9C27B0"
-            }
-
-# function to obtain a UMAP 2D embedding from high dimensional data
-def projection(hd_data, min_dist = 0.5, n_neighbors = 300, rs = 1):
-    # defining the UMAP reducer
-    reducer = umap.UMAP(min_dist = 0.5, n_neighbors = 300, random_state = 1) # this is the original baseline
-    # applying UMAP to reduce the dimensionality to 2
-    embedding = reducer.fit_transform(hd_data)
-    
-    return embedding
-
-# function to visualize the UMAP embedding
-def visualize_projection(embedding_input, string_labels, color_map):
-    plt.figure(figsize=(8,6), dpi=1000)
-    plt.scatter(embedding_input[:,0], embedding_input[:,1], s=0.05,
-                c=string_labels.map(colormap))
-    plt.title('UMAP baseline projection (colored via predictions) \n on a test subset of 160 samples (cloud size = 1024)',
-              fontsize=24)
-    plt.show()
+# function to load in data
+def data_loader_part_seg():
+    conv9_hidden_output_subset = th.load('./data/conv9_hidden_output_subset.pt')
+    preds_subset = th.load('./data/preds_subset.pt')
+    part_labels_subset = th.load('./data/part_labels_subset.pt')
+    return conv9_hidden_output_subset, preds_subset,part_labels_subset
