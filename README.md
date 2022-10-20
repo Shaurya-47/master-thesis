@@ -1,3 +1,6 @@
+# TO-DO:
+* Put a picture of the conv9 output - to show what thesis is about
+
 # Code for the master's thesis titled "Effective Activation Projections for Deep Learning on Point Clouds"
 
 ## Requirements
