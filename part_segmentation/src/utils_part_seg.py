@@ -7,6 +7,14 @@ import matplotlib.pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
 from pytorch3d.loss import chamfer_distance as cd
 
+# function to load in the ShapeNet Part subset data for Conv layer 9 (160 examples of size 1024 each)
+def data_loader_part_seg():
+    conv9_hidden_output_subset = th.load('./part_segmentation/data/conv9_hidden_output_subset.pt')
+    preds_subset = th.load('./part_segmentation/data/preds_subset.pt')
+    part_labels_subset = th.load('./part_segmentation/data/part_labels_subset.pt')
+    
+    return conv9_hidden_output_subset, preds_subset, part_labels_subset
+
 # function to obtain a UMAP 2D embedding from high dimensional data
 def projection(hd_data, mindist = 0.5, neighbors = 300, rs = 1):
     # defining the UMAP reducer
@@ -50,14 +58,6 @@ def neighborhood_hit(data, labels, n_neighbors):
     # returning the average NH score across all points
     return np.array(neighborhood_hit_scores).mean()
     
-# function to load in data
-def data_loader_part_seg():
-    conv9_hidden_output_subset = th.load('./data/conv9_hidden_output_subset.pt')
-    preds_subset = th.load('./data/preds_subset.pt')
-    part_labels_subset = th.load('./data/part_labels_subset.pt')
-    
-    return conv9_hidden_output_subset, preds_subset,part_labels_subset
-
 # function to constrct a CD matrix from a collection of input sets (GPU version)
 def construct_cd_matrix(cd_input):
     # computing CD
@@ -77,13 +77,13 @@ colormap = {"airplane_0": "#CFD8DC", "airplane_1": "#90A4AE", "airplane_2": "#60
             "bag_0": "#BDBDBD", "bag_1": "#616161",
             "cap_0": "#FF8A65", "cap_1": "#E64A19",
             "car_0": "#BCAAA4", "car_1": "#8D6E63", "car_2": "#6D4C41", "car_3": "#4E342E",
-            "chair_0": "#FFE0B2", "chair_1": "#FFB74D", "chair_2": "#FB8C00", #, "olivedrab", # chair part
+            "chair_0": "#FFE0B2", "chair_1": "#FFB74D", "chair_2": "#FB8C00",
             "earphone_0": "#FFF9C4", "earphone_1": "#FFF176", "earphone_2": "#FDD835",
             "guitar_0": "#DCE775", "guitar_1": "#C0CA33", "guitar_2": "#9E9D24",
             "knife_0": "#4CAF50", "knife_1": "#1B5E20",
             "lamp_0": "#80CBC4", "lamp_1": "#26A69A", "lamp_2": "#00897B", "lamp_3": "#004D40",
             "laptop_0": "#80DEEA", "laptop_1": "#00BCD4",
-            "motor_0": "#BBDEFB", "motor_1": "#90CAF9", "motor_2": "#64B5F6", "motor_3": "#2196F3", "motor_4": "#1976D2", "motor_5": "#0D47A1",#  "mediumpurple" # secondlast color (motorbike part)
+            "motor_0": "#BBDEFB", "motor_1": "#90CAF9", "motor_2": "#64B5F6", "motor_3": "#2196F3", "motor_4": "#1976D2", "motor_5": "#0D47A1",
             "mug_0": "#3F51B5", "mug_1": "#1A237E",
             "pistol_0": "#B39DDB", "pistol_1": "#7E57C2", "pistol_2": "#512DA8",
             "rocket_0": "#EF9A9A", "rocket_1": "#EF5350", "rocket_2": "#C62828",

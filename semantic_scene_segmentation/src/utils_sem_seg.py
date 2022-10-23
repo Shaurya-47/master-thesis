@@ -7,6 +7,14 @@ import matplotlib.pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
 from pytorch3d.loss import chamfer_distance as cd
 
+# function to load in the ShapeNet Part subset data for Conv layer 8 (100 examples of size 2048 each)
+def data_loader_sem_seg():
+    conv8_hidden_output_subset = th.load('./semantic_scene_segmentation/data/conv8_hidden_output_subset.pt')
+    preds_subset = th.load('./semantic_scene_segmentation/data/preds_subset.pt')
+    labels_subset = th.load('./semantic_scene_segmentation/data/labels_subset.pt')
+    
+    return conv8_hidden_output_subset, preds_subset, labels_subset
+
 # function to obtain a UMAP 2D embedding from high dimensional data
 def projection(hd_data, mindist = 0.5, neighbors = 300, rs = 1):
     # defining the UMAP reducer
@@ -50,14 +58,6 @@ def neighborhood_hit(data, labels, n_neighbors):
     # returning the average NH score across all points
     return np.array(neighborhood_hit_scores).mean()
     
-# function to load in data
-def data_loader_part_seg():
-    conv9_hidden_output_subset = th.load('./data/conv9_hidden_output_subset.pt')
-    preds_subset = th.load('./data/preds_subset.pt')
-    part_labels_subset = th.load('./data/part_labels_subset.pt')
-    
-    return conv9_hidden_output_subset, preds_subset,part_labels_subset
-
 # function to constrct a CD matrix from a collection of input sets (GPU version)
 def construct_cd_matrix(cd_input):
     # computing CD
@@ -72,23 +72,20 @@ def construct_cd_matrix(cd_input):
     
     return cd_matrix
 
-# defined color map for part segmentation
-colormap = {"airplane_0": "#CFD8DC", "airplane_1": "#90A4AE", "airplane_2": "#607D8B", "airplane_3": "#455A64",
-            "bag_0": "#BDBDBD", "bag_1": "#616161",
-            "cap_0": "#FF8A65", "cap_1": "#E64A19",
-            "car_0": "#BCAAA4", "car_1": "#8D6E63", "car_2": "#6D4C41", "car_3": "#4E342E",
-            "chair_0": "#FFE0B2", "chair_1": "#FFB74D", "chair_2": "#FB8C00", #, "olivedrab", # chair part
-            "earphone_0": "#FFF9C4", "earphone_1": "#FFF176", "earphone_2": "#FDD835",
-            "guitar_0": "#DCE775", "guitar_1": "#C0CA33", "guitar_2": "#9E9D24",
-            "knife_0": "#4CAF50", "knife_1": "#1B5E20",
-            "lamp_0": "#80CBC4", "lamp_1": "#26A69A", "lamp_2": "#00897B", "lamp_3": "#004D40",
-            "laptop_0": "#80DEEA", "laptop_1": "#00BCD4",
-            "motor_0": "#BBDEFB", "motor_1": "#90CAF9", "motor_2": "#64B5F6", "motor_3": "#2196F3", "motor_4": "#1976D2", "motor_5": "#0D47A1",#  "mediumpurple" # secondlast color (motorbike part)
-            "mug_0": "#3F51B5", "mug_1": "#1A237E",
-            "pistol_0": "#B39DDB", "pistol_1": "#7E57C2", "pistol_2": "#512DA8",
-            "rocket_0": "#EF9A9A", "rocket_1": "#EF5350", "rocket_2": "#C62828",
-            "skateboard_0": "#F8BBD0", "skateboard_1": "#F06292", "skateboard_2": "#E91E63",
-            "table_0": "#E1BEE7", "table_1": "#BA68C8", "table_2": "#9C27B0"
+# defined color map for semantic segmentation
+colormap = {"ceiling": "#9E9E9E", # grey
+            "floor": "#795548", # brown
+            "wall": "#FF5722", # dark orange
+            "beam": "#FFC107",  # amber(dark yellow)
+            "column": "#FFEE58", # light yellow
+            "window": "#CDDC39", # lime
+            "door": "#4CAF50", # green
+            "table": "#009688", # table
+            "chair": "#00BCD4" ,# cyan-light blue
+            "sofa": "#2196F3", # blue
+            "bookcase": "#3F51B5", # indigo(dark blue)
+            "board": "#9C27B0", # purple
+            "clutter": "#E91E63", # pink
             }
 
 # function to arrign string labels to model predictions/dataset labels
@@ -98,55 +95,20 @@ def class_labeler(input_array):
     input_array = input_array.tolist()
     
     # adding string class labels 
-    input_array = ["airplane_0" if x==0 else x for x in input_array]
-    input_array = ["airplane_1" if x==1 else x for x in input_array]
-    input_array = ["airplane_2" if x==2 else x for x in input_array]
-    input_array = ["airplane_3" if x==3 else x for x in input_array]
-    input_array = ["bag_0" if x==4 else x for x in input_array]
-    input_array = ["bag_1" if x==5 else x for x in input_array]
-    input_array = ["cap_0" if x==6 else x for x in input_array]
-    input_array = ["cap_1" if x==7 else x for x in input_array]
-    input_array = ["car_0" if x==8 else x for x in input_array]
-    input_array = ["car_1" if x==9 else x for x in input_array]
-    input_array = ["car_2" if x==10 else x for x in input_array]
-    input_array = ["car_3" if x==11 else x for x in input_array]
-    input_array = ["chair_0" if x==12 else x for x in input_array]
-    input_array = ["chair_1" if x==13 else x for x in input_array]
-    input_array = ["chair_2" if x==14 else x for x in input_array]
-    input_array = ["earphone_0" if x==16 else x for x in input_array]
-    input_array = ["earphone_1" if x==17 else x for x in input_array]
-    input_array = ["earphone_2" if x==18 else x for x in input_array]
-    input_array = ["guitar_0" if x==19 else x for x in input_array]
-    input_array = ["guitar_1" if x==20 else x for x in input_array]
-    input_array = ["guitar_2" if x==21 else x for x in input_array]
-    input_array = ["knife_0" if x==22 else x for x in input_array]
-    input_array = ["knife_1" if x==23 else x for x in input_array]
-    input_array = ["lamp_0" if x==24 else x for x in input_array]
-    input_array = ["lamp_1" if x==25 else x for x in input_array]
-    input_array = ["lamp_2" if x==26 else x for x in input_array]
-    input_array = ["lamp_3" if x==27 else x for x in input_array]
-    input_array = ["laptop_0" if x==28 else x for x in input_array]
-    input_array = ["laptop_1" if x==29 else x for x in input_array]
-    input_array = ["motor_0" if x==30 else x for x in input_array]
-    input_array = ["motor_1" if x==31 else x for x in input_array]
-    input_array = ["motor_2" if x==32 else x for x in input_array]
-    input_array = ["motor_3" if x==33 else x for x in input_array]
-    input_array = ["motor_4" if x==34 else x for x in input_array]
-    input_array = ["motor_5" if x==35 else x for x in input_array]
-    input_array = ["mug_0" if x==36 else x for x in input_array]
-    input_array = ["mug_1" if x==37 else x for x in input_array]
-    input_array = ["pistol_0" if x==38 else x for x in input_array]
-    input_array = ["pistol_1" if x==39 else x for x in input_array]
-    input_array = ["pistol_2" if x==40 else x for x in input_array]
-    input_array = ["rocket_0" if x==41 else x for x in input_array]
-    input_array = ["rocket_1" if x==42 else x for x in input_array]
-    input_array = ["rocket_2" if x==43 else x for x in input_array]
-    input_array = ["skateboard_0" if x==44 else x for x in input_array]
-    input_array = ["skateboard_1" if x==45 else x for x in input_array]
-    input_array = ["skateboard_2" if x==46 else x for x in input_array]
-    input_array = ["table_0" if x==47 else x for x in input_array]
-    input_array = ["table_1" if x==48 else x for x in input_array]
-    input_array = ["table_2" if x==49 else x for x in input_array]
+    input_array = input_array.tolist()
+    input_array = ["ceiling" if x==0 else x for x in input_array]
+    input_array = ["floor" if x==1 else x for x in input_array]
+    input_array = ["wall" if x==2 else x for x in input_array]
+    input_array = ["beam" if x==3 else x for x in input_array]
+    input_array = ["column" if x==4 else x for x in input_array]
+    input_array = ["window" if x==5 else x for x in input_array]
+    input_array = ["door" if x==6 else x for x in input_array]
+    input_array = ["table" if x==7 else x for x in input_array]
+    input_array = ["chair" if x==8 else x for x in input_array]
+    input_array = ["sofa" if x==9 else x for x in input_array]
+    input_array = ["bookcase" if x==10 else x for x in input_array]
+    input_array = ["board" if x==11 else x for x in input_array]
+    input_array = ["clutter" if x==12 else x for x in input_array]
     
     # converting to a pandas series
     input_array = np.array(input_array).flatten()
@@ -504,72 +466,72 @@ def prepare_cd_input_shapenet_part(hidden_layer_output, predictions):
     return cd_input
 
 # defining the color list for the PT-1 output on the ShapeNet Part subset
-color_list_pt_1_conv9_subset_shapenet_part = []
+color_list_pt_1_conv8_subset_shapenet_part = []
 # airplane
-color_list_pt_1_conv9_subset_shapenet_part.append(['#CFD8DC'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#90A4AE'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#607D8B'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#455A64'] * 7)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#CFD8DC'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#90A4AE'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#607D8B'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#455A64'] * 7)
 # bag
-color_list_pt_1_conv9_subset_shapenet_part.append(['#BDBDBD'] * 9)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#616161'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#BDBDBD'] * 9)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#616161'] * 10)
 # cap
-color_list_pt_1_conv9_subset_shapenet_part.append(['#FF8A65'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#E64A19'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#FF8A65'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#E64A19'] * 10)
 # car
-color_list_pt_1_conv9_subset_shapenet_part.append(['#BCAAA4'] * 6)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#8D6E63'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#6D4C41'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#4E342E'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#BCAAA4'] * 6)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#8D6E63'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#6D4C41'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#4E342E'] * 10)
 # chair
-color_list_pt_1_conv9_subset_shapenet_part.append(['#FFE0B2'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#FFB74D'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#FB8C00'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#FFE0B2'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#FFB74D'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#FB8C00'] * 10)
 # earphone
-color_list_pt_1_conv9_subset_shapenet_part.append(['#FFF9C4'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#FFF176'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#FDD835'] * 3)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#FFF9C4'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#FFF176'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#FDD835'] * 3)
 # guitar
-color_list_pt_1_conv9_subset_shapenet_part.append(['#DCE775'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#C0CA33'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#9E9D24'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#DCE775'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#C0CA33'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#9E9D24'] * 10)
 # knife
-color_list_pt_1_conv9_subset_shapenet_part.append(['#4CAF50'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#1B5E20'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#4CAF50'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#1B5E20'] * 10)
 # lamp
-color_list_pt_1_conv9_subset_shapenet_part.append(['#80CBC4'] * 7)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#26A69A'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#00897B'] * 2)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#004D40'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#80CBC4'] * 7)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#26A69A'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#00897B'] * 2)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#004D40'] * 10)
 # laptop
-color_list_pt_1_conv9_subset_shapenet_part.append(['#80DEEA'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#00BCD4'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#80DEEA'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#00BCD4'] * 10)
 # motorbike
-color_list_pt_1_conv9_subset_shapenet_part.append(['#BBDEFB'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#64B5F6'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#2196F3'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#1976D2'] * 8)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#0D47A1'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#BBDEFB'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#64B5F6'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#2196F3'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#1976D2'] * 8)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#0D47A1'] * 10)
 # mug
-color_list_pt_1_conv9_subset_shapenet_part.append(['#3F51B5'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#1A237E'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#3F51B5'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#1A237E'] * 10)
 # pistol
-color_list_pt_1_conv9_subset_shapenet_part.append(['#B39DDB'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#7E57C2'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#512DA8'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#B39DDB'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#7E57C2'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#512DA8'] * 10)
 # rocket
-color_list_pt_1_conv9_subset_shapenet_part.append(['#EF9A9A'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#EF5350'] * 8)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#C62828'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#EF9A9A'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#EF5350'] * 8)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#C62828'] * 10)
 # skateboard
-color_list_pt_1_conv9_subset_shapenet_part.append(['#F8BBD0'] * 8)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#F06292'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#E91E63'] * 7)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#F8BBD0'] * 8)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#F06292'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#E91E63'] * 7)
 # table
-color_list_pt_1_conv9_subset_shapenet_part.append(['#E1BEE7'] * 10)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#BA68C8'] * 8)
-color_list_pt_1_conv9_subset_shapenet_part.append(['#9C27B0'] * 2)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#E1BEE7'] * 10)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#BA68C8'] * 8)
+color_list_pt_1_conv8_subset_shapenet_part.append(['#9C27B0'] * 2)
 # post-processing
-color_list_pt_1_conv9_subset_shapenet_part = [item for sublist in color_list_pt_1_conv9_subset_shapenet_part for item in sublist]
-color_list_pt_1_conv9_subset_shapenet_part = pd.Series(color_list_pt_1_conv9_subset_shapenet_part)
+color_list_pt_1_conv8_subset_shapenet_part = [item for sublist in color_list_pt_1_conv8_subset_shapenet_part for item in sublist]
+color_list_pt_1_conv8_subset_shapenet_part = pd.Series(color_list_pt_1_conv8_subset_shapenet_part)
 
