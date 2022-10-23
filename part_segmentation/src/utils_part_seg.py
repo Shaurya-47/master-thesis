@@ -23,6 +23,14 @@ def visualize_projection(embedding_input, string_labels, color_map, title):
                 c=string_labels.map(color_map))
     plt.title(title, fontsize=24)
     plt.show()
+    
+# function to visualize the UMAP embedding with points colored manually
+def visualize_projection_manual_color(embedding_input, color_list, title):
+    plt.figure(figsize=(8,6), dpi=1000)
+    plt.scatter(embedding_input[:,0], embedding_input[:,1], s=0.05,
+                c=color_list)
+    plt.title(title, fontsize=24)
+    plt.show()
 
 # function to calculate the average neighborhood hit (NH) score across a set of points
 def neighborhood_hit(data, labels, n_neighbors):
@@ -494,3 +502,74 @@ def prepare_cd_input_shapenet_part(hidden_layer_output, predictions):
     cd_input = np.resize(chamfer_distance_input, (480,1)).flatten()
     
     return cd_input
+
+# defining the color list for the PT-1 output on the ShapeNet Part subset
+color_list_pt_1_conv9_subset_shapenet_part = []
+# airplane
+color_list_pt_1_conv9_subset_shapenet_part.append(['#CFD8DC'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#90A4AE'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#607D8B'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#455A64'] * 7)
+# bag
+color_list_pt_1_conv9_subset_shapenet_part.append(['#BDBDBD'] * 9)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#616161'] * 10)
+# cap
+color_list_pt_1_conv9_subset_shapenet_part.append(['#FF8A65'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#E64A19'] * 10)
+# car
+color_list_pt_1_conv9_subset_shapenet_part.append(['#BCAAA4'] * 6)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#8D6E63'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#6D4C41'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#4E342E'] * 10)
+# chair
+color_list_pt_1_conv9_subset_shapenet_part.append(['#FFE0B2'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#FFB74D'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#FB8C00'] * 10)
+# earphone
+color_list_pt_1_conv9_subset_shapenet_part.append(['#FFF9C4'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#FFF176'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#FDD835'] * 3)
+# guitar
+color_list_pt_1_conv9_subset_shapenet_part.append(['#DCE775'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#C0CA33'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#9E9D24'] * 10)
+# knife
+color_list_pt_1_conv9_subset_shapenet_part.append(['#4CAF50'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#1B5E20'] * 10)
+# lamp
+color_list_pt_1_conv9_subset_shapenet_part.append(['#80CBC4'] * 7)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#26A69A'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#00897B'] * 2)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#004D40'] * 10)
+# laptop
+color_list_pt_1_conv9_subset_shapenet_part.append(['#80DEEA'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#00BCD4'] * 10)
+# motorbike
+color_list_pt_1_conv9_subset_shapenet_part.append(['#BBDEFB'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#64B5F6'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#2196F3'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#1976D2'] * 8)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#0D47A1'] * 10)
+# mug
+color_list_pt_1_conv9_subset_shapenet_part.append(['#3F51B5'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#1A237E'] * 10)
+# pistol
+color_list_pt_1_conv9_subset_shapenet_part.append(['#B39DDB'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#7E57C2'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#512DA8'] * 10)
+# rocket
+color_list_pt_1_conv9_subset_shapenet_part.append(['#EF9A9A'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#EF5350'] * 8)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#C62828'] * 10)
+# skateboard
+color_list_pt_1_conv9_subset_shapenet_part.append(['#F8BBD0'] * 8)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#F06292'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#E91E63'] * 7)
+# table
+color_list_pt_1_conv9_subset_shapenet_part.append(['#E1BEE7'] * 10)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#BA68C8'] * 8)
+color_list_pt_1_conv9_subset_shapenet_part.append(['#9C27B0'] * 2)
+# post-processing
+color_list_pt_1_conv9_subset_shapenet_part = [item for sublist in color_list_pt_1_conv9_subset_shapenet_part for item in sublist]
+color_list_pt_1_conv9_subset_shapenet_part = pd.Series(color_list_pt_1_conv9_subset_shapenet_part)
+

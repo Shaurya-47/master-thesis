@@ -9,7 +9,7 @@ import os
 import sys
 #%matplotlib inline
 
-# importing utils file
+# importing utils functions
 module_path = os.path.abspath(os.path.join('.\GitHub\master-thesis\part_segmentation'))
 if module_path not in sys.path:
     sys.path.append(module_path)

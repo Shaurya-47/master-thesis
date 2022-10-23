@@ -11,7 +11,7 @@ from umap.umap_ import compute_membership_strengths, smooth_knn_dist, make_epoch
 import scipy
 #%matplotlib inline
 
-# importing utils file
+# importing utils functions
 module_path = os.path.abspath(os.path.join('.\GitHub\master-thesis\part_segmentation'))
 if module_path not in sys.path:
     sys.path.append(module_path)
