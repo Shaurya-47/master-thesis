@@ -59,9 +59,9 @@ def neighborhood_hit(data, labels, n_neighbors):
     return np.array(neighborhood_hit_scores).mean()
     
 # function to constrct a CD matrix from a collection of input sets (GPU version)
-def construct_cd_matrix(cd_input):
+def construct_cd_matrix(cd_input, layer_dimension = 256):
     # computing CD
-    cd_matrix = np.asarray([[list(cd(th.from_numpy(np.resize(p1, (1,p1.shape[0],256))).cuda(), th.from_numpy(np.resize(p2, (1,p2.shape[0],256))).cuda()))[0].cpu() for p2 in cd_input] for p1 in cd_input])
+    cd_matrix = np.asarray([[list(cd(th.from_numpy(np.resize(p1, (1,p1.shape[0],layer_dimension))).cuda(), th.from_numpy(np.resize(p2, (1,p2.shape[0],layer_dimension))).cuda()))[0].cpu() for p2 in cd_input] for p1 in cd_input])
     # post-processing
     cd_matrix = np.vectorize(lambda x: x.item())(cd_matrix)
     # drop NaN rows
@@ -155,76 +155,78 @@ def class_labeler(input_array):
     return input_array
 
 # function to prepare chamfer distance (CD) input for the ShapeNet Part dataset
-def prepare_cd_input_shapenet_part(hidden_layer_output, predictions):
+def prepare_cd_input_shapenet_part(hidden_layer_output, predictions,
+                                   cloud_size = 1024, layer_dimension = 256,
+                                   examples_per_class = 10):
     # getting object-wise hidden layer outputs
-    airplane_hidden_layer_output = hidden_layer_output[0:10]
-    bag_hidden_layer_output = hidden_layer_output[10:20]
-    cap_hidden_layer_output = hidden_layer_output[20:30]
-    car_hidden_layer_output = hidden_layer_output[30:40]
-    chair_hidden_layer_output = hidden_layer_output[40:50]
-    earphone_hidden_layer_output = hidden_layer_output[50:60]
-    guitar_hidden_layer_output = hidden_layer_output[60:70]
-    knife_hidden_layer_output = hidden_layer_output[70:80]
-    lamp_hidden_layer_output = hidden_layer_output[80:90]
-    laptop_hidden_layer_output = hidden_layer_output[90:100]
-    motorbike_hidden_layer_output = hidden_layer_output[100:110]
-    mug_hidden_layer_output = hidden_layer_output[110:120]
-    pistol_hidden_layer_output = hidden_layer_output[120:130]
-    rocket_hidden_layer_output = hidden_layer_output[130:140]
-    skateboard_hidden_layer_output = hidden_layer_output[140:150]
-    table_hidden_layer_output = hidden_layer_output[150:160]
+    airplane_hidden_layer_output = hidden_layer_output[0:examples_per_class]
+    bag_hidden_layer_output = hidden_layer_output[examples_per_class:2*examples_per_class]
+    cap_hidden_layer_output = hidden_layer_output[2*examples_per_class:3*examples_per_class]
+    car_hidden_layer_output = hidden_layer_output[3*examples_per_class:4*examples_per_class]
+    chair_hidden_layer_output = hidden_layer_output[4*examples_per_class:5*examples_per_class]
+    earphone_hidden_layer_output = hidden_layer_output[5*examples_per_class:6*examples_per_class]
+    guitar_hidden_layer_output = hidden_layer_output[6*examples_per_class:7*examples_per_class]
+    knife_hidden_layer_output = hidden_layer_output[7*examples_per_class:8*examples_per_class]
+    lamp_hidden_layer_output = hidden_layer_output[8*examples_per_class:9*examples_per_class]
+    laptop_hidden_layer_output = hidden_layer_output[9*examples_per_class:10*examples_per_class]
+    motorbike_hidden_layer_output = hidden_layer_output[10*examples_per_class:11*examples_per_class]
+    mug_hidden_layer_output = hidden_layer_output[11*examples_per_class:12*examples_per_class]
+    pistol_hidden_layer_output = hidden_layer_output[12*examples_per_class:13*examples_per_class]
+    rocket_hidden_layer_output = hidden_layer_output[13*examples_per_class:14*examples_per_class]
+    skateboard_hidden_layer_output = hidden_layer_output[14*examples_per_class:15*examples_per_class]
+    table_hidden_layer_output = hidden_layer_output[15*examples_per_class:16*examples_per_class]
     # getting object-wise predictions
-    airplane_predictions = predictions[0:10]
-    bag_predictions = predictions[10:20]
-    cap_predictions = predictions[20:30]
-    car_predictions = predictions[30:40]
-    chair_predictions = predictions[40:50]
-    earphone_predictions = predictions[50:60]
-    guitar_predictions = predictions[60:70]
-    knife_predictions = predictions[70:80]
-    lamp_predictions = predictions[80:90]
-    laptop_predictions = predictions[90:100]
-    motorbike_predictions = predictions[100:110]
-    mug_predictions = predictions[110:120]
-    pistol_predictions = predictions[120:130]
-    rocket_predictions = predictions[130:140]
-    skateboard_predictions = predictions[140:150]
-    table_predictions = predictions[150:160]
+    airplane_predictions = predictions[0:examples_per_class]
+    bag_predictions = predictions[examples_per_class:2*examples_per_class]
+    cap_predictions = predictions[2*examples_per_class:3*examples_per_class]
+    car_predictions = predictions[3*examples_per_class:4*examples_per_class]
+    chair_predictions = predictions[4*examples_per_class:5*examples_per_class]
+    earphone_predictions = predictions[5*examples_per_class:6*examples_per_class]
+    guitar_predictions = predictions[6*examples_per_class:7*examples_per_class]
+    knife_predictions = predictions[7*examples_per_class:8*examples_per_class]
+    lamp_predictions = predictions[8*examples_per_class:9*examples_per_class]
+    laptop_predictions = predictions[9*examples_per_class:10*examples_per_class]
+    motorbike_predictions = predictions[10*examples_per_class:11*examples_per_class]
+    mug_predictions = predictions[11*examples_per_class:12*examples_per_class]
+    pistol_predictions = predictions[12*examples_per_class:13*examples_per_class]
+    rocket_predictions = predictions[13*examples_per_class:14*examples_per_class]
+    skateboard_predictions = predictions[14*examples_per_class:15*examples_per_class]
+    table_predictions = predictions[15*examples_per_class:16*examples_per_class]
     
     # restructuring object-wise hidden layer outputs
-    airplane_hidden_layer_output = np.resize(airplane_hidden_layer_output, (10,1024,256))
-    bag_hidden_layer_output = np.resize(bag_hidden_layer_output, (10,1024,256))
-    cap_hidden_layer_output = np.resize(cap_hidden_layer_output, (10,1024,256))
-    car_hidden_layer_output = np.resize(car_hidden_layer_output, (10,1024,256))
-    chair_hidden_layer_output = np.resize(chair_hidden_layer_output, (10,1024,256))
-    earphone_hidden_layer_output = np.resize(earphone_hidden_layer_output, (10,1024,256))
-    guitar_hidden_layer_output = np.resize(guitar_hidden_layer_output, (10,1024,256))
-    knife_hidden_layer_output = np.resize(knife_hidden_layer_output, (10,1024,256))
-    lamp_hidden_layer_output = np.resize(lamp_hidden_layer_output, (10,1024,256))
-    laptop_hidden_layer_output = np.resize(laptop_hidden_layer_output, (10,1024,256))
-    motorbike_hidden_layer_output = np.resize(motorbike_hidden_layer_output, (10,1024,256))
-    mug_hidden_layer_output = np.resize(mug_hidden_layer_output, (10,1024,256))
-    pistol_hidden_layer_output = np.resize(pistol_hidden_layer_output, (10,1024,256))
-    rocket_hidden_layer_output = np.resize(rocket_hidden_layer_output, (10,1024,256))
-    skateboard_hidden_layer_output = np.resize(skateboard_hidden_layer_output, (10,1024,256))
-    table_hidden_layer_output = np.resize(table_hidden_layer_output, (10,1024,256))
+    airplane_hidden_layer_output = np.resize(airplane_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    bag_hidden_layer_output = np.resize(bag_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    cap_hidden_layer_output = np.resize(cap_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    car_hidden_layer_output = np.resize(car_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    chair_hidden_layer_output = np.resize(chair_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    earphone_hidden_layer_output = np.resize(earphone_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    guitar_hidden_layer_output = np.resize(guitar_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    knife_hidden_layer_output = np.resize(knife_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    lamp_hidden_layer_output = np.resize(lamp_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    laptop_hidden_layer_output = np.resize(laptop_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    motorbike_hidden_layer_output = np.resize(motorbike_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    mug_hidden_layer_output = np.resize(mug_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    pistol_hidden_layer_output = np.resize(pistol_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    rocket_hidden_layer_output = np.resize(rocket_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    skateboard_hidden_layer_output = np.resize(skateboard_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
+    table_hidden_layer_output = np.resize(table_hidden_layer_output, (examples_per_class,cloud_size,layer_dimension))
     # restructuring object-wise predictions
-    airplane_predictions = np.resize(airplane_predictions, (10,1024,50))
-    bag_predictions = np.resize(bag_predictions, (10,1024,50))
-    cap_predictions = np.resize(cap_predictions, (10,1024,50))
-    car_predictions = np.resize(car_predictions, (10,1024,50))
-    chair_predictions = np.resize(chair_predictions, (10,1024,50))
-    earphone_predictions = np.resize(earphone_predictions, (10,1024,50))
-    guitar_predictions = np.resize(guitar_predictions, (10,1024,50))
-    knife_predictions = np.resize(knife_predictions, (10,1024,50))
-    lamp_predictions = np.resize(lamp_predictions, (10,1024,50))
-    laptop_predictions = np.resize(laptop_predictions, (10,1024,50))
-    motorbike_predictions = np.resize(motorbike_predictions, (10,1024,50))
-    mug_predictions = np.resize(mug_predictions, (10,1024,50))
-    pistol_predictions = np.resize(pistol_predictions, (10,1024,50))
-    rocket_predictions = np.resize(rocket_predictions, (10,1024,50))
-    skateboard_predictions = np.resize(skateboard_predictions, (10,1024,50))
-    table_predictions = np.resize(table_predictions, (10,1024,50))
+    airplane_predictions = np.resize(airplane_predictions, (examples_per_class,cloud_size,50))
+    bag_predictions = np.resize(bag_predictions, (examples_per_class,cloud_size,50))
+    cap_predictions = np.resize(cap_predictions, (examples_per_class,cloud_size,50))
+    car_predictions = np.resize(car_predictions, (examples_per_class,cloud_size,50))
+    chair_predictions = np.resize(chair_predictions, (examples_per_class,cloud_size,50))
+    earphone_predictions = np.resize(earphone_predictions, (examples_per_class,cloud_size,50))
+    guitar_predictions = np.resize(guitar_predictions, (examples_per_class,cloud_size,50))
+    knife_predictions = np.resize(knife_predictions, (examples_per_class,cloud_size,50))
+    lamp_predictions = np.resize(lamp_predictions, (examples_per_class,cloud_size,50))
+    laptop_predictions = np.resize(laptop_predictions, (examples_per_class,cloud_size,50))
+    motorbike_predictions = np.resize(motorbike_predictions, (examples_per_class,cloud_size,50))
+    mug_predictions = np.resize(mug_predictions, (examples_per_class,cloud_size,50))
+    pistol_predictions = np.resize(pistol_predictions, (examples_per_class,cloud_size,50))
+    rocket_predictions = np.resize(rocket_predictions, (examples_per_class,cloud_size,50))
+    skateboard_predictions = np.resize(skateboard_predictions, (examples_per_class,cloud_size,50))
+    table_predictions = np.resize(table_predictions, (examples_per_class,cloud_size,50))
     
     # dropping the one-hot encoding dimension for predictions
     airplane_predictions = th.from_numpy(airplane_predictions).max(dim=2)[1].detach().cpu().numpy()
@@ -294,7 +296,7 @@ def prepare_cd_input_shapenet_part(hidden_layer_output, predictions):
     indices_table_part_1 = np.array(table_predictions == 48)
     indices_table_part_2 = np.array(table_predictions == 49)
     
-    # applying part mask to get array subsets per example part
+    # applying part masks to get array subsets per example part
     # creating placeholders
     airplane_hidden_layer_output_part_0 = []
     airplane_hidden_layer_output_part_1 = []
@@ -499,7 +501,8 @@ def prepare_cd_input_shapenet_part(hidden_layer_output, predictions):
                                         ))
     
     # flattening the tensor
-    cd_input = np.resize(chamfer_distance_input, (480,1)).flatten()
+    cd_input = np.resize(chamfer_distance_input,
+                         (chamfer_distance_input.shape[0]*chamfer_distance_input.shape[1],1)).flatten()
     
     return cd_input
 
