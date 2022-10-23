@@ -5,6 +5,7 @@ import torch as th
 import umap
 import matplotlib.pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
+from pytorch3d.loss import chamfer_distance as cd
 
 # function to obtain a UMAP 2D embedding from high dimensional data
 def projection(hd_data, mindist = 0.5, neighbors = 300, rs = 1):
@@ -41,6 +42,28 @@ def neighborhood_hit(data, labels, n_neighbors):
     # returning the average NH score across all points
     return np.array(neighborhood_hit_scores).mean()
     
+# function to load in data
+def data_loader_part_seg():
+    conv9_hidden_output_subset = th.load('./data/conv9_hidden_output_subset.pt')
+    preds_subset = th.load('./data/preds_subset.pt')
+    part_labels_subset = th.load('./data/part_labels_subset.pt')
+    
+    return conv9_hidden_output_subset, preds_subset,part_labels_subset
+
+# function to constrct a CD matrix from a collection of input sets (GPU version)
+def construct_cd_matrix(cd_input):
+    # computing CD
+    cd_matrix = np.asarray([[list(cd(th.from_numpy(np.resize(p1, (1,p1.shape[0],256))).cuda(), th.from_numpy(np.resize(p2, (1,p2.shape[0],256))).cuda()))[0].cpu() for p2 in cd_input] for p1 in cd_input])
+    # post-processing
+    cd_matrix = np.vectorize(lambda x: x.item())(cd_matrix)
+    # drop NaN rows
+    cd_matrix = cd_matrix.flatten()
+    cd_matrix = cd_matrix[~np.isnan(cd_matrix)]
+    # shifting back to matrix form
+    cd_matrix = np.reshape(cd_matrix, (np.sqrt(cd_matrix), np.sqrt(cd_matrix)))
+    
+    return cd_matrix
+
 # defined color map for part segmentation
 colormap = {"airplane_0": "#CFD8DC", "airplane_1": "#90A4AE", "airplane_2": "#607D8B", "airplane_3": "#455A64",
             "bag_0": "#BDBDBD", "bag_1": "#616161",
@@ -123,9 +146,351 @@ def class_labeler(input_array):
     
     return input_array
 
-# function to load in data
-def data_loader_part_seg():
-    conv9_hidden_output_subset = th.load('./data/conv9_hidden_output_subset.pt')
-    preds_subset = th.load('./data/preds_subset.pt')
-    part_labels_subset = th.load('./data/part_labels_subset.pt')
-    return conv9_hidden_output_subset, preds_subset,part_labels_subset
+# function to prepare chamfer distance (CD) input for the ShapeNet Part dataset
+def prepare_cd_input_shapenet_part(hidden_layer_output, predictions):
+    # getting object-wise hidden layer outputs
+    airplane_hidden_layer_output = hidden_layer_output[0:10]
+    bag_hidden_layer_output = hidden_layer_output[10:20]
+    cap_hidden_layer_output = hidden_layer_output[20:30]
+    car_hidden_layer_output = hidden_layer_output[30:40]
+    chair_hidden_layer_output = hidden_layer_output[40:50]
+    earphone_hidden_layer_output = hidden_layer_output[50:60]
+    guitar_hidden_layer_output = hidden_layer_output[60:70]
+    knife_hidden_layer_output = hidden_layer_output[70:80]
+    lamp_hidden_layer_output = hidden_layer_output[80:90]
+    laptop_hidden_layer_output = hidden_layer_output[90:100]
+    motorbike_hidden_layer_output = hidden_layer_output[100:110]
+    mug_hidden_layer_output = hidden_layer_output[110:120]
+    pistol_hidden_layer_output = hidden_layer_output[120:130]
+    rocket_hidden_layer_output = hidden_layer_output[130:140]
+    skateboard_hidden_layer_output = hidden_layer_output[140:150]
+    table_hidden_layer_output = hidden_layer_output[150:160]
+    # getting object-wise predictions
+    airplane_predictions = predictions[0:10]
+    bag_predictions = predictions[10:20]
+    cap_predictions = predictions[20:30]
+    car_predictions = predictions[30:40]
+    chair_predictions = predictions[40:50]
+    earphone_predictions = predictions[50:60]
+    guitar_predictions = predictions[60:70]
+    knife_predictions = predictions[70:80]
+    lamp_predictions = predictions[80:90]
+    laptop_predictions = predictions[90:100]
+    motorbike_predictions = predictions[100:110]
+    mug_predictions = predictions[110:120]
+    pistol_predictions = predictions[120:130]
+    rocket_predictions = predictions[130:140]
+    skateboard_predictions = predictions[140:150]
+    table_predictions = predictions[150:160]
+    
+    # restructuring object-wise hidden layer outputs
+    airplane_hidden_layer_output = np.resize(airplane_hidden_layer_output, (10,1024,256))
+    bag_hidden_layer_output = np.resize(bag_hidden_layer_output, (10,1024,256))
+    cap_hidden_layer_output = np.resize(cap_hidden_layer_output, (10,1024,256))
+    car_hidden_layer_output = np.resize(car_hidden_layer_output, (10,1024,256))
+    chair_hidden_layer_output = np.resize(chair_hidden_layer_output, (10,1024,256))
+    earphone_hidden_layer_output = np.resize(earphone_hidden_layer_output, (10,1024,256))
+    guitar_hidden_layer_output = np.resize(guitar_hidden_layer_output, (10,1024,256))
+    knife_hidden_layer_output = np.resize(knife_hidden_layer_output, (10,1024,256))
+    lamp_hidden_layer_output = np.resize(lamp_hidden_layer_output, (10,1024,256))
+    laptop_hidden_layer_output = np.resize(laptop_hidden_layer_output, (10,1024,256))
+    motorbike_hidden_layer_output = np.resize(motorbike_hidden_layer_output, (10,1024,256))
+    mug_hidden_layer_output = np.resize(mug_hidden_layer_output, (10,1024,256))
+    pistol_hidden_layer_output = np.resize(pistol_hidden_layer_output, (10,1024,256))
+    rocket_hidden_layer_output = np.resize(rocket_hidden_layer_output, (10,1024,256))
+    skateboard_hidden_layer_output = np.resize(skateboard_hidden_layer_output, (10,1024,256))
+    table_hidden_layer_output = np.resize(table_hidden_layer_output, (10,1024,256))
+    # restructuring object-wise predictions
+    airplane_predictions = np.resize(airplane_predictions, (10,1024,50))
+    bag_predictions = np.resize(bag_predictions, (10,1024,50))
+    cap_predictions = np.resize(cap_predictions, (10,1024,50))
+    car_predictions = np.resize(car_predictions, (10,1024,50))
+    chair_predictions = np.resize(chair_predictions, (10,1024,50))
+    earphone_predictions = np.resize(earphone_predictions, (10,1024,50))
+    guitar_predictions = np.resize(guitar_predictions, (10,1024,50))
+    knife_predictions = np.resize(knife_predictions, (10,1024,50))
+    lamp_predictions = np.resize(lamp_predictions, (10,1024,50))
+    laptop_predictions = np.resize(laptop_predictions, (10,1024,50))
+    motorbike_predictions = np.resize(motorbike_predictions, (10,1024,50))
+    mug_predictions = np.resize(mug_predictions, (10,1024,50))
+    pistol_predictions = np.resize(pistol_predictions, (10,1024,50))
+    rocket_predictions = np.resize(rocket_predictions, (10,1024,50))
+    skateboard_predictions = np.resize(skateboard_predictions, (10,1024,50))
+    table_predictions = np.resize(table_predictions, (10,1024,50))
+    
+    # dropping the one-hot encoding dimension for predictions
+    airplane_predictions = th.from_numpy(airplane_predictions).max(dim=2)[1].detach().cpu().numpy()
+    bag_predictions = th.from_numpy(bag_predictions).max(dim=2)[1].detach().cpu().numpy()
+    cap_predictions = th.from_numpy(cap_predictions).max(dim=2)[1].detach().cpu().numpy()
+    car_predictions = th.from_numpy(car_predictions).max(dim=2)[1].detach().cpu().numpy()
+    chair_predictions = th.from_numpy(chair_predictions).max(dim=2)[1].detach().cpu().numpy()
+    earphone_predictions = th.from_numpy(earphone_predictions).max(dim=2)[1].detach().cpu().numpy()
+    guitar_predictions = th.from_numpy(guitar_predictions).max(dim=2)[1].detach().cpu().numpy()
+    knife_predictions = th.from_numpy(knife_predictions).max(dim=2)[1].detach().cpu().numpy()
+    lamp_predictions = th.from_numpy(lamp_predictions).max(dim=2)[1].detach().cpu().numpy()
+    laptop_predictions = th.from_numpy(laptop_predictions).max(dim=2)[1].detach().cpu().numpy()
+    motorbike_predictions = th.from_numpy(motorbike_predictions).max(dim=2)[1].detach().cpu().numpy()
+    mug_predictions = th.from_numpy(mug_predictions).max(dim=2)[1].detach().cpu().numpy()
+    pistol_predictions = th.from_numpy(pistol_predictions).max(dim=2)[1].detach().cpu().numpy()
+    rocket_predictions = th.from_numpy(rocket_predictions).max(dim=2)[1].detach().cpu().numpy()
+    skateboard_predictions = th.from_numpy(skateboard_predictions).max(dim=2)[1].detach().cpu().numpy()
+    table_predictions = th.from_numpy(table_predictions).max(dim=2)[1].detach().cpu().numpy()
+    
+    # creating boolean masks per part and per example
+    indices_airplane_part_0 = np.array(airplane_predictions == 0)
+    indices_airplane_part_1 = np.array(airplane_predictions == 1)
+    indices_airplane_part_2 = np.array(airplane_predictions == 2)
+    indices_airplane_part_3 = np.array(airplane_predictions == 3)
+    indices_bag_part_0 = np.array(bag_predictions == 4)
+    indices_bag_part_1 = np.array(bag_predictions == 5)
+    indices_cap_part_0 = np.array(cap_predictions == 6)
+    indices_cap_part_1 = np.array(cap_predictions == 7)
+    indices_car_part_0 = np.array(car_predictions == 8)
+    indices_car_part_1 = np.array(car_predictions == 9)
+    indices_car_part_2 = np.array(car_predictions == 10)
+    indices_car_part_3 = np.array(car_predictions == 11)
+    indices_chair_part_0 = np.array(chair_predictions == 12)
+    indices_chair_part_1 = np.array(chair_predictions == 13)
+    indices_chair_part_2 = np.array(chair_predictions == 14)
+    indices_earphone_part_0 = np.array(earphone_predictions == 16)
+    indices_earphone_part_1 = np.array(earphone_predictions == 17)
+    indices_earphone_part_2 = np.array(earphone_predictions == 18)
+    indices_guitar_part_0 = np.array(guitar_predictions == 19)
+    indices_guitar_part_1 = np.array(guitar_predictions == 20)
+    indices_guitar_part_2 = np.array(guitar_predictions == 21)
+    indices_knife_part_0 = np.array(knife_predictions == 22)
+    indices_knife_part_1 = np.array(knife_predictions == 23)
+    indices_lamp_part_0 = np.array(lamp_predictions == 24)
+    indices_lamp_part_1 = np.array(lamp_predictions == 25)
+    indices_lamp_part_2 = np.array(lamp_predictions == 26)
+    indices_lamp_part_3 = np.array(lamp_predictions == 27)
+    indices_laptop_part_0 = np.array(laptop_predictions == 28)
+    indices_laptop_part_1 = np.array(laptop_predictions == 29)
+    indices_motorbike_part_0 = np.array(motorbike_predictions == 30)
+    indices_motorbike_part_1 = np.array(motorbike_predictions == 31)
+    indices_motorbike_part_2 = np.array(motorbike_predictions == 32)
+    indices_motorbike_part_3 = np.array(motorbike_predictions == 33)
+    indices_motorbike_part_4 = np.array(motorbike_predictions == 35)
+    indices_mug_part_0 = np.array(mug_predictions == 36)
+    indices_mug_part_1 = np.array(mug_predictions == 37)
+    indices_pistol_part_0 = np.array(pistol_predictions == 38)
+    indices_pistol_part_1 = np.array(pistol_predictions == 39)
+    indices_pistol_part_2 = np.array(pistol_predictions == 40)
+    indices_rocket_part_0 = np.array(rocket_predictions == 41)
+    indices_rocket_part_1 = np.array(rocket_predictions == 42)
+    indices_rocket_part_2 = np.array(rocket_predictions == 43)
+    indices_skateboard_part_0 = np.array(skateboard_predictions == 44)
+    indices_skateboard_part_1 = np.array(skateboard_predictions == 45)
+    indices_skateboard_part_2 = np.array(skateboard_predictions == 46)
+    indices_table_part_0 = np.array(table_predictions == 47)
+    indices_table_part_1 = np.array(table_predictions == 48)
+    indices_table_part_2 = np.array(table_predictions == 49)
+    
+    # applying part mask to get array subsets per example part
+    # creating placeholders
+    airplane_hidden_layer_output_part_0 = []
+    airplane_hidden_layer_output_part_1 = []
+    airplane_hidden_layer_output_part_2 = []
+    airplane_hidden_layer_output_part_3 = []
+    bag_hidden_layer_output_part_0 = []
+    bag_hidden_layer_output_part_1 = []
+    cap_hidden_layer_output_part_0 = []
+    cap_hidden_layer_output_part_1 = []
+    car_hidden_layer_output_part_0 = []
+    car_hidden_layer_output_part_1 = []
+    car_hidden_layer_output_part_2 = []
+    car_hidden_layer_output_part_3 = []
+    chair_hidden_layer_output_part_0 = []
+    chair_hidden_layer_output_part_1 = []
+    chair_hidden_layer_output_part_2 = []
+    earphone_hidden_layer_output_part_0 = []
+    earphone_hidden_layer_output_part_1 = []
+    earphone_hidden_layer_output_part_2 = []
+    guitar_hidden_layer_output_part_0 = []
+    guitar_hidden_layer_output_part_1 = []
+    guitar_hidden_layer_output_part_2 = []
+    knife_hidden_layer_output_part_0 = []
+    knife_hidden_layer_output_part_1 = []
+    lamp_hidden_layer_output_part_0 = []
+    lamp_hidden_layer_output_part_1 = []
+    lamp_hidden_layer_output_part_2 = []
+    lamp_hidden_layer_output_part_3 = []
+    laptop_hidden_layer_output_part_0 = []
+    laptop_hidden_layer_output_part_1 = []
+    motorbike_hidden_layer_output_part_0 = []
+    motorbike_hidden_layer_output_part_1 = []
+    motorbike_hidden_layer_output_part_2 = []
+    motorbike_hidden_layer_output_part_3 = []
+    motorbike_hidden_layer_output_part_4 = []
+    mug_hidden_layer_output_part_0 = []
+    mug_hidden_layer_output_part_1 = []
+    pistol_hidden_layer_output_part_0 = []
+    pistol_hidden_layer_output_part_1 = []
+    pistol_hidden_layer_output_part_2 = []
+    rocket_hidden_layer_output_part_0 = []
+    rocket_hidden_layer_output_part_1 = []
+    rocket_hidden_layer_output_part_2 = []
+    skateboard_hidden_layer_output_part_0 = []
+    skateboard_hidden_layer_output_part_1 = []
+    skateboard_hidden_layer_output_part_2 = []
+    table_hidden_layer_output_part_0 = []
+    table_hidden_layer_output_part_1 = []
+    table_hidden_layer_output_part_2 = []
+    
+    # main loop for part subsetting per example
+    for i in range(airplane_predictions.shape[0]):
+        # subsetting by example parts
+        inner_result_airplane_0 = airplane_hidden_layer_output[i][indices_airplane_part_0[i]]
+        inner_result_airplane_1 = airplane_hidden_layer_output[i][indices_airplane_part_1[i]]
+        inner_result_airplane_2 = airplane_hidden_layer_output[i][indices_airplane_part_2[i]]
+        inner_result_airplane_3 = airplane_hidden_layer_output[i][indices_airplane_part_3[i]]
+        inner_result_bag_0 = bag_hidden_layer_output[i][indices_bag_part_0[i]]
+        inner_result_bag_1 = bag_hidden_layer_output[i][indices_bag_part_1[i]]
+        inner_result_cap_0 = cap_hidden_layer_output[i][indices_cap_part_0[i]]
+        inner_result_cap_1 = cap_hidden_layer_output[i][indices_cap_part_1[i]]
+        inner_result_car_0 = car_hidden_layer_output[i][indices_car_part_0[i]]
+        inner_result_car_1 = car_hidden_layer_output[i][indices_car_part_1[i]]
+        inner_result_car_2 = car_hidden_layer_output[i][indices_car_part_2[i]]
+        inner_result_car_3 = car_hidden_layer_output[i][indices_car_part_3[i]]
+        inner_result_chair_0 = chair_hidden_layer_output[i][indices_chair_part_0[i]]
+        inner_result_chair_1 = chair_hidden_layer_output[i][indices_chair_part_1[i]]
+        inner_result_chair_2 = chair_hidden_layer_output[i][indices_chair_part_2[i]]
+        inner_result_earphone_0 = earphone_hidden_layer_output[i][indices_earphone_part_0[i]]
+        inner_result_earphone_1 = earphone_hidden_layer_output[i][indices_earphone_part_1[i]]
+        inner_result_earphone_2 = earphone_hidden_layer_output[i][indices_earphone_part_2[i]]
+        inner_result_guitar_0 = guitar_hidden_layer_output[i][indices_guitar_part_0[i]]
+        inner_result_guitar_1 = guitar_hidden_layer_output[i][indices_guitar_part_1[i]]
+        inner_result_guitar_2 = guitar_hidden_layer_output[i][indices_guitar_part_2[i]]
+        inner_result_knife_0 = knife_hidden_layer_output[i][indices_knife_part_0[i]]
+        inner_result_knife_1 = knife_hidden_layer_output[i][indices_knife_part_1[i]]
+        inner_result_lamp_0 = lamp_hidden_layer_output[i][indices_lamp_part_0[i]]
+        inner_result_lamp_1 = lamp_hidden_layer_output[i][indices_lamp_part_1[i]]
+        inner_result_lamp_2 = lamp_hidden_layer_output[i][indices_lamp_part_2[i]]
+        inner_result_lamp_3 = lamp_hidden_layer_output[i][indices_lamp_part_3[i]]
+        inner_result_laptop_0 = laptop_hidden_layer_output[i][indices_laptop_part_0[i]]
+        inner_result_laptop_1 = laptop_hidden_layer_output[i][indices_laptop_part_1[i]]
+        inner_result_motorbike_0 = motorbike_hidden_layer_output[i][indices_motorbike_part_0[i]]
+        inner_result_motorbike_1 = motorbike_hidden_layer_output[i][indices_motorbike_part_1[i]]
+        inner_result_motorbike_2 = motorbike_hidden_layer_output[i][indices_motorbike_part_2[i]]
+        inner_result_motorbike_3 = motorbike_hidden_layer_output[i][indices_motorbike_part_3[i]]
+        inner_result_motorbike_4 = motorbike_hidden_layer_output[i][indices_motorbike_part_4[i]]
+        inner_result_mug_0 = mug_hidden_layer_output[i][indices_mug_part_0[i]]
+        inner_result_mug_1 = mug_hidden_layer_output[i][indices_mug_part_1[i]]
+        inner_result_pistol_0 = pistol_hidden_layer_output[i][indices_pistol_part_0[i]]
+        inner_result_pistol_1 = pistol_hidden_layer_output[i][indices_pistol_part_1[i]]
+        inner_result_pistol_2 = pistol_hidden_layer_output[i][indices_pistol_part_2[i]]
+        inner_result_rocket_0 = rocket_hidden_layer_output[i][indices_rocket_part_0[i]]
+        inner_result_rocket_1 = rocket_hidden_layer_output[i][indices_rocket_part_1[i]]
+        inner_result_rocket_2 = rocket_hidden_layer_output[i][indices_rocket_part_2[i]]
+        inner_result_skateboard_0 = skateboard_hidden_layer_output[i][indices_skateboard_part_0[i]]
+        inner_result_skateboard_1 = skateboard_hidden_layer_output[i][indices_skateboard_part_1[i]]
+        inner_result_skateboard_2 = skateboard_hidden_layer_output[i][indices_skateboard_part_2[i]]
+        inner_result_table_0 = table_hidden_layer_output[i][indices_table_part_0[i]]
+        inner_result_table_1 = table_hidden_layer_output[i][indices_table_part_1[i]]
+        inner_result_table_2 = table_hidden_layer_output[i][indices_table_part_2[i]]
+        
+        # appending to lists
+        airplane_hidden_layer_output_part_0.append(inner_result_airplane_0)
+        airplane_hidden_layer_output_part_1.append(inner_result_airplane_1)
+        airplane_hidden_layer_output_part_2.append(inner_result_airplane_2)
+        airplane_hidden_layer_output_part_3.append(inner_result_airplane_3)
+        bag_hidden_layer_output_part_0.append(inner_result_bag_0)
+        bag_hidden_layer_output_part_1.append(inner_result_bag_1)
+        cap_hidden_layer_output_part_0.append(inner_result_cap_0)
+        cap_hidden_layer_output_part_1.append(inner_result_cap_1)
+        car_hidden_layer_output_part_0.append(inner_result_car_0)
+        car_hidden_layer_output_part_1.append(inner_result_car_1)
+        car_hidden_layer_output_part_2.append(inner_result_car_2)
+        car_hidden_layer_output_part_3.append(inner_result_car_3)
+        chair_hidden_layer_output_part_0.append(inner_result_chair_0)
+        chair_hidden_layer_output_part_1.append(inner_result_chair_1)
+        chair_hidden_layer_output_part_2.append(inner_result_chair_2)
+        earphone_hidden_layer_output_part_0.append(inner_result_earphone_0)
+        earphone_hidden_layer_output_part_1.append(inner_result_earphone_1)
+        earphone_hidden_layer_output_part_2.append(inner_result_earphone_2)
+        guitar_hidden_layer_output_part_0.append(inner_result_guitar_0)
+        guitar_hidden_layer_output_part_1.append(inner_result_guitar_1)
+        guitar_hidden_layer_output_part_2.append(inner_result_guitar_2)
+        knife_hidden_layer_output_part_0.append(inner_result_knife_0)
+        knife_hidden_layer_output_part_1.append(inner_result_knife_1)
+        lamp_hidden_layer_output_part_0.append(inner_result_lamp_0)
+        lamp_hidden_layer_output_part_1.append(inner_result_lamp_1)
+        lamp_hidden_layer_output_part_2.append(inner_result_lamp_2)
+        lamp_hidden_layer_output_part_3.append(inner_result_lamp_3)
+        laptop_hidden_layer_output_part_0.append(inner_result_laptop_0)
+        laptop_hidden_layer_output_part_1.append(inner_result_laptop_1)
+        motorbike_hidden_layer_output_part_0.append(inner_result_motorbike_0)
+        motorbike_hidden_layer_output_part_1.append(inner_result_motorbike_1)
+        motorbike_hidden_layer_output_part_2.append(inner_result_motorbike_2)
+        motorbike_hidden_layer_output_part_3.append(inner_result_motorbike_3)
+        motorbike_hidden_layer_output_part_4.append(inner_result_motorbike_4)
+        mug_hidden_layer_output_part_0.append(inner_result_mug_0)
+        mug_hidden_layer_output_part_1.append(inner_result_mug_1)
+        pistol_hidden_layer_output_part_0.append(inner_result_pistol_0)
+        pistol_hidden_layer_output_part_1.append(inner_result_pistol_1)
+        pistol_hidden_layer_output_part_2.append(inner_result_pistol_2)
+        rocket_hidden_layer_output_part_0.append(inner_result_rocket_0)
+        rocket_hidden_layer_output_part_1.append(inner_result_rocket_1)
+        rocket_hidden_layer_output_part_2.append(inner_result_rocket_2)
+        skateboard_hidden_layer_output_part_0.append(inner_result_skateboard_0)
+        skateboard_hidden_layer_output_part_1.append(inner_result_skateboard_1)
+        skateboard_hidden_layer_output_part_2.append(inner_result_skateboard_2)
+        table_hidden_layer_output_part_0.append(inner_result_table_0)
+        table_hidden_layer_output_part_1.append(inner_result_table_1)
+        table_hidden_layer_output_part_2.append(inner_result_table_2)
+        
+    # stacking all example part sets together - input for Chamfer Distance
+    chamfer_distance_input = np.vstack((airplane_hidden_layer_output_part_0,
+                                        airplane_hidden_layer_output_part_1,
+                                        airplane_hidden_layer_output_part_2,
+                                        airplane_hidden_layer_output_part_3,
+                                        bag_hidden_layer_output_part_0,
+                                        bag_hidden_layer_output_part_1,
+                                        cap_hidden_layer_output_part_0,
+                                        cap_hidden_layer_output_part_1,
+                                        car_hidden_layer_output_part_0,
+                                        car_hidden_layer_output_part_1,
+                                        car_hidden_layer_output_part_2,
+                                        car_hidden_layer_output_part_3,
+                                        chair_hidden_layer_output_part_0,
+                                        chair_hidden_layer_output_part_1,
+                                        chair_hidden_layer_output_part_2,
+                                        earphone_hidden_layer_output_part_0,
+                                        earphone_hidden_layer_output_part_1,
+                                        earphone_hidden_layer_output_part_2,
+                                        guitar_hidden_layer_output_part_0,
+                                        guitar_hidden_layer_output_part_1,
+                                        guitar_hidden_layer_output_part_2,
+                                        knife_hidden_layer_output_part_0,
+                                        knife_hidden_layer_output_part_1,
+                                        lamp_hidden_layer_output_part_0,
+                                        lamp_hidden_layer_output_part_1,
+                                        lamp_hidden_layer_output_part_2,
+                                        lamp_hidden_layer_output_part_3,
+                                        laptop_hidden_layer_output_part_0,
+                                        laptop_hidden_layer_output_part_1,
+                                        motorbike_hidden_layer_output_part_0,
+                                        motorbike_hidden_layer_output_part_1,
+                                        motorbike_hidden_layer_output_part_2,
+                                        motorbike_hidden_layer_output_part_3,
+                                        motorbike_hidden_layer_output_part_4,
+                                        mug_hidden_layer_output_part_0,
+                                        mug_hidden_layer_output_part_1,
+                                        pistol_hidden_layer_output_part_0,
+                                        pistol_hidden_layer_output_part_1,
+                                        pistol_hidden_layer_output_part_2,
+                                        rocket_hidden_layer_output_part_0,
+                                        rocket_hidden_layer_output_part_1,
+                                        rocket_hidden_layer_output_part_2,
+                                        skateboard_hidden_layer_output_part_0,
+                                        skateboard_hidden_layer_output_part_1,
+                                        skateboard_hidden_layer_output_part_2,
+                                        table_hidden_layer_output_part_0,
+                                        table_hidden_layer_output_part_1,
+                                        table_hidden_layer_output_part_2
+                                        ))
+    
+    # flattening the tensor
+    cd_input = np.resize(chamfer_distance_input, (480,1)).flatten()
+    
+    return cd_input
