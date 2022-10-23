@@ -370,8 +370,8 @@ def test(args, io):
     
     # main loop
     for data_batch, label_batch, seg_batch in test_loader:
-        label_one_hot_batch = np.zeros((label.shape[0], 16))
-        for idx in range(label.shape[0]):
+        label_one_hot_batch = np.zeros((label_batch.shape[0], 16))
+        for idx in range(label_batch.shape[0]):
             label_one_hot_batch[idx, label_batch[idx]] = 1
         label_one_hot_batch = torch.from_numpy(label_one_hot_batch.astype(np.float32))
         data_batch, label_one_hot_batch, seg = data_batch.to(device), label_one_hot_batch.to(device), seg_batch.to(device)

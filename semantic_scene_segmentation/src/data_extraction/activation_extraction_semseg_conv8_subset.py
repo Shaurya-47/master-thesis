@@ -341,9 +341,7 @@ def test(args, io):
             io.cprint(str(test_true_seg.shape))
             io.cprint(str(test_pred_seg.shape))
 
-#### -------------------------------------------------------------------- #####
-
-            # hidden layer information extraction
+#### -------------- hidden layer information extraction ----------------- #####
             
             # set device
             device = 'cuda' # or 'cpu'
@@ -360,52 +358,43 @@ def test(args, io):
             # batch-wise feature extraction loop
             
             # placeholders
-            PREDS = []
-            FEATS = []
-            PART_LABELS = []
+            preds = []
+            features = []
+            labels = []
             
             # placeholder for batch features
-            features = {}
+            features_batch = {}
             
             test_loader = DataLoader(S3DIS(partition='test', num_points=args.num_points, test_area=args.test_area),
                                      batch_size=args.test_batch_size, shuffle=False, drop_last=False)
             
-            for data, seg in test_loader:
+            for data_batch, seg_batch in test_loader:
                 
                 
-                data, seg = data.to(device), seg.to(device)
-                data = data.permute(0, 2, 1)
-                batch_size = data.size()[0]
+                data_batch, seg_batch = data.to(device), seg_batch.to(device)
+                data_batch = data_batch.permute(0, 2, 1)
+                batch_size = data_batch.size()[0]
     
                 # forward pass with feature extraction
-                preds = model(data)
+                preds_batch = model(data_batch)
             
-                # add feats and preds to lists
-                PREDS.append(preds.detach().cpu().numpy())
-                FEATS.append(features['feats'].cpu().numpy())
-                
-                # add part labels and parent labels to list
-                PART_LABELS.append(seg.detach().cpu().numpy())
+                # append batch features, predictions, and labels to lists
+                preds.append(preds_batch.detach().cpu().numpy())
+                features.append(features_batch['feats'].cpu().numpy())
+                labels.append(seg_batch.detach().cpu().numpy())
     
-    
-            ## processing tensors
-            
-            PREDS = np.concatenate(PREDS)
-            FEATS = np.concatenate(FEATS)
-            PART_LABELS = np.concatenate(PART_LABELS)
-            
-            PREDS = PREDS[0:100]
-            FEATS = FEATS[0:100]
-            PART_LABELS = PART_LABELS[0:100]
-            
-            PREDS = torch.from_numpy(PREDS)
-            FEATS = torch.from_numpy(FEATS)
-            PART_LABELS = torch.from_numpy(PART_LABELS)
-    
+            # obtaining data subsets
+            preds = np.concatenate(preds)[0:100]
+            features = np.concatenate(features)[0:100]
+            labels = np.concatenate(labels)[0:100]
+            # converting to torch tensors
+            preds = torch.from_numpy(preds)
+            features = torch.from_numpy(features)
+            labels = torch.from_numpy(labels)
             # saving locally
-            torch.save(PREDS, 'outputs/%s/semseg_test_predictions_2048_100.pt' % args.exp_name)
-            torch.save(FEATS, 'outputs/%s/semseg_test_conv8_hidden_output_2048_100.pt' % args.exp_name)
-            torch.save(PART_LABELS, 'outputs/%s/semseg_test_labels_2048_100.pt' % args.exp_name)
+            torch.save(preds, 'outputs/%s/conv8_hidden_output_subset.pt' % args.exp_name)
+            torch.save(features, 'outputs/%s/preds_subset.pt' % args.exp_name)
+            torch.save(labels, 'outputs/%s/part_labels_subset.pt' % args.exp_name)
 
 #### -------------------------------------------------------------------- #####
 
@@ -421,11 +410,6 @@ def test(args, io):
                                                                                           avg_per_class_acc,
                                                                                           np.mean(all_ious))
         io.cprint(outstr)
-        
-        # saving the model prediction and label tensors
-        torch.save(test_pred_seg, 'outputs/%s/test_pred_seg.pt' % args.exp_name)
-        torch.save(test_true_seg, 'outputs/%s/test_true_seg.pt' % args.exp_name)
-
 
 if __name__ == "__main__":
     # Training settings
