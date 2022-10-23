@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import argparse
 import torch
+import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -342,10 +343,8 @@ def test(args, io):
     torch.save(test_true_seg, 'outputs/%s/test_true_seg.pt' % args.exp_name)
     torch.save(test_label_seg, 'outputs/%s/test_label_seg.pt' % args.exp_name)
 
-#### -------------------------------------------------------------------- #####
-
-    # hidden layer information extraction
-    
+#### -------------- hidden layer information extraction ----------------- #####
+   
     # set device
     device = 'cuda' # or 'cpu'
     
@@ -355,229 +354,192 @@ def test(args, io):
             features[name] = output.detach()
         return hook
     
-    # extracting the hidden layer activations for a chosen layer
+    # selecting the neural network layer
     model.module.conv9.register_forward_hook(get_features('feats'))
 
     # batch-wise feature extraction loop
     
     # placeholders
-    PREDS = []
-    FEATS = []
-    PART_LABELS = []
-    LABELS = []
+    preds = []
+    features = []
+    part_labels = []
+    labels = []
     
     # placeholder for batch features
-    features = {}
+    features_batch = {}
     
-    for data, label, seg in test_loader:
-        label_one_hot = np.zeros((label.shape[0], 16))
-        for idx in range(label.shape[0]):
-            label_one_hot[idx, label[idx]] = 1
-        label_one_hot = torch.from_numpy(label_one_hot.astype(np.float32))
-        data, label_one_hot, seg = data.to(device), label_one_hot.to(device), seg.to(device)
-        data = data.permute(0, 2, 1)
-        batch_size = data.size()[0]
+    # main loop
+    for data_batch, label_batch, seg_batch in test_loader:
+        label_one_hot_batch = np.zeros((label_batch.shape[0], 16))
+        for idx in range(label_batch.shape[0]):
+            label_one_hot_batch[idx, label_batch[idx]] = 1
+        label_one_hot_batch = torch.from_numpy(label_one_hot_batch.astype(np.float32))
+        data_batch, label_one_hot_batch, seg = data_batch.to(device), label_one_hot_batch.to(device), seg_batch.to(device)
+        data_batch = data_batch.permute(0, 2, 1)
+        batch_size = data_batch.size()[0]
 
         # forward pass with feature extraction
-        preds = model(data, label_one_hot)
+        preds_batch = model(data_batch, label_one_hot_batch)
     
-        # add feats and preds to lists
-        PREDS.append(preds.detach().cpu().numpy())
-        FEATS.append(features['feats'].cpu().numpy())
-        
-        # add part labels and parent labels to list
-        PART_LABELS.append(seg.detach().cpu().numpy())
-        LABELS.append(label.detach().cpu().numpy())
+        # append batch features, predictions, part and object labels to lists
+        preds.append(preds_batch.detach().cpu().numpy())
+        features.append(features_batch['feats'].cpu().numpy())
+        part_labels.append(seg_batch.detach().cpu().numpy())
+        labels.append(label_batch.detach().cpu().numpy())
 
-    # getting indices by object class
-    indices_airplane = np.array(LABELS == 0).flatten()
-    indices_bag = np.array(LABELS == 1).flatten()
-    indices_cap = np.array(LABELS == 2).flatten()
-    indices_car = np.array(LABELS == 3).flatten()
-    indices_chair = np.array(LABELS == 4).flatten()
-    indices_earphone = np.array(LABELS == 5).flatten()
-    indices_guitar = np.array(LABELS == 6).flatten()
-    indices_knife = np.array(LABELS == 7).flatten()
-    indices_lamp = np.array(LABELS == 8).flatten()
-    indices_laptop = np.array(LABELS == 9).flatten()
-    indices_motorbike = np.array(LABELS == 10).flatten()
-    indices_mug = np.array(LABELS == 11).flatten()
-    indices_pistol = np.array(LABELS == 12).flatten()
-    indices_rocket = np.array(LABELS == 13).flatten()
-    indices_skateboard = np.array(LABELS == 14).flatten()
-    indices_table = np.array(LABELS == 15).flatten()
+    # getting object indices using labels
+    indices_airplane = np.array(labels == 0).flatten()
+    indices_bag = np.array(labels == 1).flatten()
+    indices_cap = np.array(labels == 2).flatten()
+    indices_car = np.array(labels == 3).flatten()
+    indices_chair = np.array(labels == 4).flatten()
+    indices_earphone = np.array(labels == 5).flatten()
+    indices_guitar = np.array(labels == 6).flatten()
+    indices_knife = np.array(labels == 7).flatten()
+    indices_lamp = np.array(labels == 8).flatten()
+    indices_laptop = np.array(labels == 9).flatten()
+    indices_motorbike = np.array(labels == 10).flatten()
+    indices_mug = np.array(labels == 11).flatten()
+    indices_pistol = np.array(labels == 12).flatten()
+    indices_rocket = np.array(labels == 13).flatten()
+    indices_skateboard = np.array(labels == 14).flatten()
+    indices_table = np.array(labels == 15).flatten()
     
-    # getting predictions by object class 
-    airplane_preds = PREDS[indices_airplane]
-    bag_preds = PREDS[indices_bag]
-    cap_preds = PREDS[indices_cap]
-    car_preds = PREDS[indices_car]
-    chair_preds = PREDS[indices_chair]
-    earphone_preds = PREDS[indices_earphone]
-    guitar_preds = PREDS[indices_guitar]
-    knife_preds = PREDS[indices_knife]
-    lamp_preds = PREDS[indices_lamp]
-    laptop_preds = PREDS[indices_laptop]
-    motorbike_preds = PREDS[indices_motorbike]
-    mug_preds = PREDS[indices_mug]
-    pistol_preds = PREDS[indices_pistol]
-    rocket_preds = PREDS[indices_rocket]
-    skateboard_preds = PREDS[indices_skateboard]
-    table_preds = PREDS[indices_table]
-    io.cprint(str((airplane_preds.shape)))
-    io.cprint(str((chair_preds.shape)))
-        
-    # selecting 10 examples per class (10 x 16 = 160)
-    airplane_preds_subset = airplane_preds[0:10]
-    bag_preds_subset = bag_preds[0:10]
-    cap_preds_subset = cap_preds[0:10]
-    car_preds_subset = car_preds[0:10]
-    chair_preds_subset = chair_preds[0:10]
-    earphone_preds_subset = earphone_preds[0:10]
-    guitar_preds_subset = guitar_preds[0:10]
-    knife_preds_subset = knife_preds[0:10]
-    lamp_preds_subset = lamp_preds[0:10]
-    laptop_preds_subset = laptop_preds[0:10]
-    motorbike_preds_subset = motorbike_preds[0:10]
-    mug_preds_subset = mug_preds[0:10]
-    pistol_preds_subset = pistol_preds[0:10]
-    rocket_preds_subset = rocket_preds[0:10]
-    skateboard_preds_subset = skateboard_preds[0:10]
-    table_preds_subset = table_preds[0:10]
-    io.cprint(str(airplane_preds_subset.shape))
-    io.cprint(str(chair_preds_subset.shape))
-
-    ##### getting activations by object class 
-    airplane_conv9_hidden_output = FEATS[indices_airplane]
-    bag_conv9_hidden_output = FEATS[indices_bag]
-    cap_conv9_hidden_output = FEATS[indices_cap]
-    car_conv9_hidden_output = FEATS[indices_car]
-    chair_conv9_hidden_output = FEATS[indices_chair]
-    earphone_conv9_hidden_output = FEATS[indices_earphone]
-    guitar_conv9_hidden_output = FEATS[indices_guitar]
-    knife_conv9_hidden_output = FEATS[indices_knife]
-    lamp_conv9_hidden_output = FEATS[indices_lamp]
-    laptop_conv9_hidden_output = FEATS[indices_laptop]
-    motorbike_conv9_hidden_output = FEATS[indices_motorbike]
-    mug_conv9_hidden_output = FEATS[indices_mug]
-    pistol_conv9_hidden_output = FEATS[indices_pistol]
-    rocket_conv9_hidden_output = FEATS[indices_rocket]
-    skateboard_conv9_hidden_output = FEATS[indices_skateboard]
-    table_conv9_hidden_output = FEATS[indices_table]
-    io.cprint(str((airplane_conv9_hidden_output.shape)))
-    io.cprint(str((chair_conv9_hidden_output.shape)))
+    # selecting 10 examples per object (10 x 16 = 160 overall)
     
-    # selecting 10 examples per class (10 x 16 = 160)
-    airplane_conv9_hidden_output_subset = airplane_conv9_hidden_output[0:10]
-    bag_conv9_hidden_output_subset = bag_conv9_hidden_output[0:10]
-    cap_conv9_hidden_output_subset = cap_conv9_hidden_output[0:10]
-    car_conv9_hidden_output_subset = car_conv9_hidden_output[0:10]
-    chair_conv9_hidden_output_subset = chair_conv9_hidden_output[0:10]
-    earphone_conv9_hidden_output_subset = earphone_conv9_hidden_output[0:10]
-    guitar_conv9_hidden_output_subset = guitar_conv9_hidden_output[0:10]
-    knife_conv9_hidden_output_subset = knife_conv9_hidden_output[0:10]
-    lamp_conv9_hidden_output_subset = lamp_conv9_hidden_output[0:10]
-    laptop_conv9_hidden_output_subset = laptop_conv9_hidden_output[0:10]
-    motorbike_conv9_hidden_output_subset = motorbike_conv9_hidden_output[0:10]
-    mug_conv9_hidden_output_subset = mug_conv9_hidden_output[0:10]
-    pistol_conv9_hidden_output_subset = pistol_conv9_hidden_output[0:10]
-    rocket_conv9_hidden_output_subset = rocket_conv9_hidden_output[0:10]
-    skateboard_conv9_hidden_output_subset = skateboard_conv9_hidden_output[0:10]
-    table_conv9_hidden_output_subset = table_conv9_hidden_output[0:10]
-    io.cprint(str(airplane_conv9_hidden_output_subset.shape))
-    io.cprint(str(chair_conv9_hidden_output_subset.shape))
+    # getting predictions using the indices
+    airplane_preds_subset = preds[indices_airplane][0:10]
+    bag_preds_subset = preds[indices_bag][0:10]
+    cap_preds_subset = preds[indices_cap][0:10]
+    car_preds_subset = preds[indices_car][0:10]
+    chair_preds_subset = preds[indices_chair][0:10]
+    earphone_preds_subset = preds[indices_earphone][0:10]
+    guitar_preds_subset = preds[indices_guitar][0:10]
+    knife_preds_subset = preds[indices_knife][0:10]
+    lamp_preds_subset = preds[indices_lamp][0:10]
+    laptop_preds_subset = preds[indices_laptop][0:10]
+    motorbike_preds_subset = preds[indices_motorbike][0:10]
+    mug_preds_subset = preds[indices_mug][0:10]
+    pistol_preds_subset = preds[indices_pistol][0:10]
+    rocket_preds_subset = preds[indices_rocket][0:10]
+    skateboard_preds_subset = preds[indices_skateboard][0:10]
+    table_preds_subset = preds[indices_table][0:10]
 
-    # getting part labels per object class
-    airplane_part_labels = PART_LABELS[indices_airplane]
-    bag_part_labels = PART_LABELS[indices_bag]
-    cap_part_labels = PART_LABELS[indices_cap]
-    car_part_labels = PART_LABELS[indices_car]
-    chair_part_labels = PART_LABELS[indices_chair]
-    earphone_part_labels = PART_LABELS[indices_earphone]
-    guitar_part_labels = PART_LABELS[indices_guitar]
-    knife_part_labels = PART_LABELS[indices_knife]
-    lamp_part_labels = PART_LABELS[indices_lamp]
-    laptop_part_labels = PART_LABELS[indices_laptop]
-    motorbike_part_labels = PART_LABELS[indices_motorbike]
-    mug_part_labels = PART_LABELS[indices_mug]
-    pistol_part_labels = PART_LABELS[indices_pistol]
-    rocket_part_labels = PART_LABELS[indices_rocket]
-    skateboard_part_labels = PART_LABELS[indices_skateboard]
-    table_part_labels = PART_LABELS[indices_table]
-    io.cprint(str((airplane_part_labels.shape)))
-    io.cprint(str((chair_part_labels.shape)))
+    # getting hidden layer outputs using the indices
+    airplane_conv9_hidden_output_subset = features[indices_airplane][0:10]
+    bag_conv9_hidden_output_subset = features[indices_bag][0:10]
+    cap_conv9_hidden_output_subset = features[indices_cap][0:10]
+    car_conv9_hidden_output_subset = features[indices_car][0:10]
+    chair_conv9_hidden_output_subset = features[indices_chair][0:10]
+    earphone_conv9_hidden_output_subset = features[indices_earphone][0:10]
+    guitar_conv9_hidden_output_subset = features[indices_guitar][0:10]
+    knife_conv9_hidden_output_subset = features[indices_knife][0:10]
+    lamp_conv9_hidden_output_subset = features[indices_lamp][0:10]
+    laptop_conv9_hidden_output_subset = features[indices_laptop][0:10]
+    motorbike_conv9_hidden_output_subset = features[indices_motorbike][0:10]
+    mug_conv9_hidden_output_subset = features[indices_mug][0:10]
+    pistol_conv9_hidden_output_subset = features[indices_pistol][0:10]
+    rocket_conv9_hidden_output_subset = features[indices_rocket][0:10]
+    skateboard_conv9_hidden_output_subset = features[indices_skateboard][0:10]
+    table_conv9_hidden_output_subset = features[indices_table][0:10]
+
+    # getting part labels using the indices
+    airplane_part_labels_subset = part_labels[indices_airplane][0:10]
+    bag_part_labels_subset = part_labels[indices_bag][0:10]
+    cap_part_labels_subset = part_labels[indices_cap][0:10]
+    car_part_labels_subset = part_labels[indices_car][0:10]
+    chair_part_labels_subset = part_labels[indices_chair][0:10]
+    earphone_part_labels_subset = part_labels[indices_earphone][0:10]
+    guitar_part_labels_subset = part_labels[indices_guitar][0:10]
+    knife_part_labels_subset = part_labels[indices_knife][0:10]
+    lamp_part_labels_subset = part_labels[indices_lamp][0:10]
+    laptop_part_labels_subset = part_labels[indices_laptop][0:10]
+    motorbike_part_labels_subset = part_labels[indices_motorbike][0:10]
+    mug_part_labels_subset = part_labels[indices_mug][0:10]
+    pistol_part_labels_subset = part_labels[indices_pistol][0:10]
+    rocket_part_labels_subset = part_labels[indices_rocket][0:10]
+    skateboard_part_labels_subset = part_labels[indices_skateboard][0:10]
+    table_part_labels_subset = part_labels[indices_table][0:10]
     
-    # selecting 10 examples per class (10 x 16 = 160)
-    airplane_part_labels_subset = airplane_part_labels[0:10]
-    bag_part_labels_subset = bag_part_labels[0:10]
-    cap_part_labels_subset = cap_part_labels[0:10]
-    car_part_labels_subset = car_part_labels[0:10]
-    chair_part_labels_subset = chair_part_labels[0:10]
-    earphone_part_labels_subset = earphone_part_labels[0:10]
-    guitar_part_labels_subset = guitar_part_labels[0:10]
-    knife_part_labels_subset = knife_part_labels[0:10]
-    lamp_part_labels_subset = lamp_part_labels[0:10]
-    laptop_part_labels_subset = laptop_part_labels[0:10]
-    motorbike_part_labels_subset = motorbike_part_labels[0:10]
-    mug_part_labels_subset = mug_part_labels[0:10]
-    pistol_part_labels_subset = pistol_part_labels[0:10]
-    rocket_part_labels_subset = rocket_part_labels[0:10]
-    skateboard_part_labels_subset = skateboard_part_labels[0:10]
-    table_part_labels_subset = table_part_labels[0:10]
-    io.cprint(str(airplane_part_labels_subset.shape))
-    io.cprint(str(chair_part_labels_subset.shape))
+    
 
+    
+    # combining all respective object-wise tensors into single tensors
+    
+    # hidden output
+    conv9_hidden_output_subset = np.vstack((airplane_conv9_hidden_output_subset, 
+                                            bag_conv9_hidden_output_subset,
+                                            cap_conv9_hidden_output_subset,
+                                            car_conv9_hidden_output_subset,
+                                            chair_conv9_hidden_output_subset,
+                                            earphone_conv9_hidden_output_subset,
+                                            guitar_conv9_hidden_output_subset,
+                                            knife_conv9_hidden_output_subset,
+                                            lamp_conv9_hidden_output_subset,
+                                            laptop_conv9_hidden_output_subset,
+                                            motorbike_conv9_hidden_output_subset,
+                                            mug_conv9_hidden_output_subset,
+                                            pistol_conv9_hidden_output_subset,
+                                            rocket_conv9_hidden_output_subset,
+                                            skateboard_conv9_hidden_output_subset,
+                                            table_conv9_hidden_output_subset
+                                            ))
+    
+    # dropping the batch size dimension from the tensor
+    conv9_hidden_output_subset = np.moveaxis(conv9_hidden_output_subset, 2, 1)
+    conv9_hidden_output_subset = np.resize(conv9_hidden_output_subset, (163840,256))
+    
+    # predictions
+    preds_subset = np.vstack((airplane_preds_subset, 
+                              bag_preds_subset,
+                              cap_preds_subset,
+                              car_preds_subset,
+                              chair_preds_subset,
+                              earphone_preds_subset,
+                              guitar_preds_subset,
+                              knife_preds_subset,
+                              lamp_preds_subset,
+                              laptop_preds_subset,
+                              motorbike_preds_subset,
+                              mug_preds_subset,
+                              pistol_preds_subset,
+                              rocket_preds_subset,
+                              skateboard_preds_subset,
+                              table_preds_subset
+                              ))
+    
+    # dropping the batch size dimension from the tensor
+    preds_subset = th.from_numpy(preds_subset)
+    preds_subset = preds_subset.permute(0, 2, 1).contiguous()
+    preds_subset = preds_subset.max(dim=2)[1]
+    preds_subset = np.resize(preds_subset, (163840,1)).flatten()
+    
+    # part labels
+    part_labels_subset = np.vstack((airplane_part_labels_subset, 
+                                    bag_part_labels_subset,
+                                    cap_part_labels_subset,
+                                    car_part_labels_subset,
+                                    chair_part_labels_subset,
+                                    earphone_part_labels_subset,
+                                    guitar_part_labels_subset,
+                                    knife_part_labels_subset,
+                                    lamp_part_labels_subset,
+                                    laptop_part_labels_subset,
+                                    motorbike_part_labels_subset,
+                                    mug_part_labels_subset,
+                                    pistol_part_labels_subset,
+                                    rocket_part_labels_subset,
+                                    skateboard_part_labels_subset,
+                                    table_part_labels_subset
+                                    ))
+    
+    # dropping the batch size dimension from the tensor
+    part_labels_subset = np.resize(part_labels_subset, (163840,1)).flatten()
+    
     # converting all to pytorch tensors and saving locally    
-    torch.save(airplane_preds_subset, 'outputs/%s/airplane_test_subset_predictions.pt' % args.exp_name)
-    torch.save(bag_preds_subset, 'outputs/%s/bag_test_subset_predictions.pt' % args.exp_name)
-    torch.save(cap_preds_subset, 'outputs/%s/cap_test_subset_predictions.pt' % args.exp_name)
-    torch.save(car_preds_subset, 'outputs/%s/car_test_subset_predictions.pt' % args.exp_name)
-    torch.save(chair_preds_subset, 'outputs/%s/chair_test_subset_predictions.pt' % args.exp_name)
-    torch.save(earphone_preds_subset, 'outputs/%s/earphones_test_subset_predictions.pt' % args.exp_name)
-    torch.save(guitar_preds_subset, 'outputs/%s/guitar_test_subset_predictions.pt' % args.exp_name)
-    torch.save(knife_preds_subset, 'outputs/%s/knife_test_subset_predictions.pt' % args.exp_name)
-    torch.save(lamp_preds_subset, 'outputs/%s/lamp_test_subset_predictions.pt' % args.exp_name)
-    torch.save(laptop_preds_subset, 'outputs/%s/laptop_test_subset_predictions.pt' % args.exp_name)
-    torch.save(motorbike_preds_subset, 'outputs/%s/motorbike_test_subset_predictions.pt' % args.exp_name)
-    torch.save(mug_preds_subset, 'outputs/%s/mug_test_subset_predictions.pt' % args.exp_name)
-    torch.save(pistol_preds_subset, 'outputs/%s/pistol_test_subset_predictions.pt' % args.exp_name)
-    torch.save(rocket_preds_subset, 'outputs/%s/rocket_test_subset_predictions.pt' % args.exp_name)
-    torch.save(skateboard_preds_subset, 'outputs/%s/skateboard_test_subset_predictions.pt' % args.exp_name)
-    torch.save(table_preds_subset, 'outputs/%s/table_test_subset_predictions.pt' % args.exp_name)
-    
-    torch.save(airplane_conv9_hidden_output_subset, 'outputs/%s/airplane_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(bag_conv9_hidden_output_subset, 'outputs/%s/bag_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(cap_conv9_hidden_output_subset, 'outputs/%s/cap_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(car_conv9_hidden_output_subset, 'outputs/%s/car_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(chair_conv9_hidden_output_subset, 'outputs/%s/chair_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(earphone_conv9_hidden_output_subset, 'outputs/%s/earphone_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(guitar_conv9_hidden_output_subset, 'outputs/%s/guitar_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(knife_conv9_hidden_output_subset, 'outputs/%s/knife_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(lamp_conv9_hidden_output_subset, 'outputs/%s/lamp_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(laptop_conv9_hidden_output_subset, 'outputs/%s/laptop_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(motorbike_conv9_hidden_output_subset, 'outputs/%s/motorbike_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(mug_conv9_hidden_output_subset, 'outputs/%s/mug_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(pistol_conv9_hidden_output_subset, 'outputs/%s/pistol_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(rocket_conv9_hidden_output_subset, 'outputs/%s/rocket_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(skateboard_conv9_hidden_output_subset, 'outputs/%s/skateboard_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    torch.save(table_conv9_hidden_output_subset, 'outputs/%s/table_test_subset_conv9_hidden_output.pt' % args.exp_name)
-    
-    torch.save(airplane_part_labels_subset, 'outputs/%s/airplane_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(bag_part_labels_subset, 'outputs/%s/bag_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(cap_part_labels_subset, 'outputs/%s/cap_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(car_part_labels_subset, 'outputs/%s/car_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(chair_part_labels_subset, 'outputs/%s/chair_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(earphone_part_labels_subset, 'outputs/%s/earphone_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(guitar_part_labels_subset, 'outputs/%s/guitar_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(knife_part_labels_subset, 'outputs/%s/knife_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(lamp_part_labels_subset, 'outputs/%s/lamp_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(laptop_part_labels_subset, 'outputs/%s/laptop_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(motorbike_part_labels_subset, 'outputs/%s/motorbike_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(mug_part_labels_subset, 'outputs/%s/mug_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(pistol_part_labels_subset, 'outputs/%s/pistol_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(rocket_part_labels_subset, 'outputs/%s/rocket_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(skateboard_part_labels_subset, 'outputs/%s/skateboard_test_subset_part_labels.pt' % args.exp_name)
-    torch.save(table_part_labels_subset, 'outputs/%s/table_test_subset_part_labels.pt' % args.exp_name)
+    torch.save(conv9_hidden_output_subset, 'outputs/%s/conv9_hidden_output_subset.pt' % args.exp_name)
+    torch.save(preds_subset, 'outputs/%s/preds_subset.pt' % args.exp_name)
+    torch.save(part_labels_subset, 'outputs/%s/part_labels_subset.pt' % args.exp_name)
 
 #### -------------------------------------------------------------------- #####
 

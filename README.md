@@ -1,10 +1,13 @@
+# TO-DO:
+* Put a picture of the conv9 output - to show what thesis is about
+
 # Code for the master's thesis titled "Effective Activation Projections for Deep Learning on Point Clouds"
 
 ## Requirements
 * Python 3.7
 * PyTorch 1.2
 * CUDA 10.0
-* Packages: glob, h5py, sklearn, plyfile, umap, pytorch3d, matplotlib, numpy, pandas, sklearn, and scipy
+* Packages: glob, h5py, plyfile, umap, pytorch3d, scipy, matplotlib, numpy, pandas, and sklearn
 
 ## Pre-requisite: extraction of hidden layer activations
 
