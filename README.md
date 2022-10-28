@@ -19,11 +19,11 @@
 
 ![alt text](https://github.com/Shaurya-47/master-thesis/blob/main/images/conv9_baseline_predictions_300_0.5.png?raw=true)
 
-2. Modified DL model explainibility method output via Projection Technique 2 - reduced visual clutter, and perception and exploration costs while preserving underlying structure without sampling:
+2. Modified DL model explainibility method output via Projection Technique 2 - reduced visual clutter, and perception and exploration costs while preserving underlying structure (no sampling):
 
 ![alt text](https://github.com/Shaurya-47/master-thesis/blob/main/images/conv9_graph_predictions_2048_1.png?raw=true)
 
-3. Modified DL model explainability output via Projection Technique 1 - reduced visual clutter, and perception and exploration costs while preserving underlying structure without sampling:
+3. Modified DL model explainability output via Projection Technique 1 - reduced visual clutter, and perception and exploration costs while preserving underlying structure (no sampling):
 
 ![alt text](https://github.com/Shaurya-47/master-thesis/blob/main/images/conv9_chamfer_predictions_190_1.png?raw=true)
 
