@@ -16,11 +16,16 @@
 ## Results in a nutshell
 
 1. Original DL model explainability method output:
+
 ![alt text](https://github.com/Shaurya-47/master-thesis/blob/main/images/conv9_baseline_predictions_300_0.5.png?raw=true)
+
 2. Modified model explainibility method output (technique 2):
+
+![alt text](https://github.com/Shaurya-47/master-thesis/blob/main/images/conv9_graph_predictions_2048_1.png?raw=true)
 
 3. Modified model explainability output (technique 1):
 
+![alt text](https://github.com/Shaurya-47/master-thesis/blob/main/images/conv9_chamfer_predictions_190_1.png?raw=true)
 
 ## Additional notes
 
