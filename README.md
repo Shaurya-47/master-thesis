@@ -13,7 +13,7 @@
 3. Replace the code in the `main_partseg.py` or `main_semseg.py` files in the repository listed in the point 2 with the code from `activation_extraction_partseg_conv9_subset.py` or `activation_extraction_semseg_conv8_subset.py` files from this repository respectively, depending on the part segmentation or semantic scene segmentation scenarios. The dataset examined in this thesis for the part segmentation scenario is ***ShapeNet Part*** (test set: 160 examples x 1024 cloud size) and the dataset for the semantic scene segmentation scenario is ***S3DIS*** (test set: 100 examples x 2048 cloud size)
 4. Thereafter, follow the instructions for the part segmentation or semantic scene segmentation scenarios provided in https://github.com/AnTao97/dgcnn.pytorch to run the evaluation scripts with model training or with a pre-trained model (after selecting a segmentation scenario). The respective code execution would lead to training of the DGCNN model (if the training mode is selected), evaluation on a test set, and storing of the corresponding hidden layer activations from the test set
 
-## Results in a nutshell
+## An example result in a nutshell
 
 1. Baseline DL model explainability method output (visualized hidden layer of a trained neural network model) - high degree of visual clutter, and high perception and exploration costs for model interpretability insights:
 
