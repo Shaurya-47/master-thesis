@@ -15,7 +15,7 @@
 
 ## Results in a nutshell
 
-1. Baseline DL model explainability method output (visualized hidden layer of a neural network) - high degree of visual clutter, and high perception and exploration costs for model interpretability insights:
+1. Baseline DL model explainability method output (visualized hidden layer of a trained neural network model) - high degree of visual clutter, and high perception and exploration costs for model interpretability insights:
 
 ![alt text](https://github.com/Shaurya-47/master-thesis/blob/main/images/conv9_baseline_predictions_300_0.5.png?raw=true)
 
